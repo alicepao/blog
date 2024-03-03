@@ -219,8 +219,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="how-to-create-nested-columns" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-create-nested-columns">How to Create Nested Columns?</h2>
 <p>Before creating any of these datatypes, we need to import the following function from pyspark.</p>
-<div id="0568ff0b" class="cell" data-execution_count="1">
+<div id="7df207e1" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from pyspark.sql.types import *</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Here are the parameters for each of the three data types:</p>
 <ul>
@@ -230,7 +233,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>elementType: Defines the DataType for all elements in the array</li>
 <li>containsNull: This is an optional parameter. It declares whether the array can have null values or not.</li>
 </ol>
-<div id="adc83b5b" class="cell" data-execution_count="2">
+<div id="7229504a" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Array_Data = [(3500, 5000, 8000, 2500, 4000)]</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -238,6 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># array = spark.createDataFrame(data = Array_Data, schema = Array_Schema)   </span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># array.printSchema()   </span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># display(array)    </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>The Result: <img src="array_example.png" class="img-fluid"></p>
 <ul>
@@ -248,7 +254,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>valueType: Defines the DataType for the values in the map.</li>
 <li>valueContainsNull: This is an optional parameter. It declares whether the map can have null values or not.</li>
 </ol>
-<div id="9e721ffe" class="cell" data-execution_count="3">
+<p><img src="unnest_before.png" class="img-fluid"></p>
+<div id="c6f9cbb2" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># map_data = [('Katy Wellen', {'junior graphic designer':3500}), ('Samuel Komo', {'junior data analyst':5000}), ('Luke Hitch', {'senior data analyst':8000}), ('Mike Nelson', {'office assistant':2500}), ('Cathy Reid', {'project manager':4000})]</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># map_schema = StructType([</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     StructField('full name', StringType(), True),</span></span>
@@ -257,15 +266,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># map = spark.createDataFrame(data = map_data, schema = map_schema) </span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># map.printSchema() </span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># display(map)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <ul>
 <li>StructType: Before talking about StructType, we need to first understand StructField. StructField is an object that consists of name(a string), dataType, and the nullable. Here’s an example:</li>
 </ul>
-<div id="05143af8" class="cell" data-execution_count="4">
+<div id="02ddc9c7" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># StructField("first_name", StringType(), True)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>StructType is created by calling the StructField. For example:</p>
-<div id="6a48f5b7" class="cell" data-execution_count="5">
+<div id="dc77b089" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Structure_Data = [(("Katy","","Wellen"),"11111","F",3500),    </span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#     (("Samuel","Komo",""),"22222","M",5000),  </span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     (("Luke","","Hitch"),"33333","M",8000),   </span></span>
@@ -287,13 +302,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># dataframe = spark.createDataFrame(data = Structure_Data, schema = Structure_Schema)</span></span>
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># dataframe.printSchema()   </span></span>
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># display(dataframe)    </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 </section>
 <section id="how-to-unnest" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-unnest">How to “Unnest”?</h2>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The easieset way is to use <code>explode</code> function. For example, let’s use our <code>map</code> variable from the previous instance.</p>
+<div id="c558e6ce" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># map_explode = map.select('full name', F.explode(map['position &amp; salary'])).withColumnRenamed(</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#     'key', 'position').withColumnRenamed('value', 'salary')</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># display(map_explode)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here’s a snapshot before unnesting: <img src="unnest_before.png" class="img-fluid"></p>
+<p>Here’s after: <img src="unnest_after.png" class="img-fluid"></p>
 
 
 </section>

@@ -51,6 +51,9 @@ It is a list or tuple value type in Python. It stores a collection of StructFiel
 Before creating any of these datatypes, we need to import the following function from pyspark. 
 
 ```{python}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
 # from pyspark.sql.types import *
 ```
 
@@ -60,6 +63,9 @@ Here are the parameters for each of the three data types:
 1. elementType: Defines the DataType for all elements in the array
 2. containsNull: This is an optional parameter. It declares whether the array can have null values or not. 
 ```{python}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
 # Array_Data = [(3500, 5000, 8000, 2500, 4000)]
 
 
@@ -79,7 +85,12 @@ The Result:
 2. valueType: Defines the DataType for the values in the map. 
 3. valueContainsNull: This is an optional parameter. It declares whether the map can have null values or not. 
 
+![](unnest_before.png)
+
 ```{python}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
 # map_data = [('Katy Wellen', {'junior graphic designer':3500}), ('Samuel Komo', {'junior data analyst':5000}), ('Luke Hitch', {'senior data analyst':8000}), ('Mike Nelson', {'office assistant':2500}), ('Cathy Reid', {'project manager':4000})]
 # map_schema = StructType([
 #     StructField('full name', StringType(), True),
@@ -94,12 +105,18 @@ The Result:
 Before talking about StructType, we need to first understand StructField. StructField is an object that consists of name(a string), dataType, and the nullable. Here's an example: 
 
 ```{python}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
 # StructField("first_name", StringType(), True)
 ```
 
 StructType is created by calling the StructField. For example: 
 
 ```{python}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
 # Structure_Data = [(("Katy","","Wellen"),"11111","F",3500),	
 #     (("Samuel","Komo",""),"22222","M",5000),	
 #     (("Luke","","Hitch"),"33333","M",8000),	
@@ -126,7 +143,20 @@ StructType is created by calling the StructField. For example:
 
 ## How to "Unnest"?
 
+The easieset way is to use `explode` function. For example, let's use our `map` variable from the previous instance.
+
+```{python}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# map_explode = map.select('full name', F.explode(map['position & salary'])).withColumnRenamed(
+#     'key', 'position').withColumnRenamed('value', 'salary')
+
+# display(map_explode)
+```
+Here's a snapshot before unnesting: 
+![](unnest_before.png)
 
 
-
-## Conclusion
+Here's after:
+![](unnest_after.png)
