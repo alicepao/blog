@@ -1,9 +1,8 @@
 ---
 title: "Data Wrangling Project Showcase: Praxis Data"
 author: "Alice Pao"
-date: "2024-02-25"
+date: "2024-03-01"
 categories: [portfolio, r]
-image: ""
 ---
 
 This project is designed to show students' praxis performance for those majoring in teacher's education department. This is only a part of the project. The end goal is to evalutate if a student's praxis score can predict wheather he or she becomes a successful teacher.
