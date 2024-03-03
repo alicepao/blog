@@ -1,0 +1,18 @@
+---
+title: "About Me"
+image: profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/alice-pao
+    - icon: github
+      text: Github
+      href: https://github.com/alicepao
+
+---
+
+Hi! This is Alice. I am studying data science at Brigham Young University-Idaho. I love story-telling, especially using data to find insights and solve problems. 
+
+I am an aspiring data analyst. I specialize in using SQL for data extraction, R for data wrangling and data visualization, Excel for data anaysis, and PowerBI and Tableau for buidling dashoboards and report. 

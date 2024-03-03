@@ -1,0 +1,280 @@
+---
+title: "Data Wrangling Project Showcase: Praxis Data"
+author: "Alice Pao"
+date: "2024-02-25"
+categories: [portfolio, r]
+image: ""
+---
+
+This project is designed to show students' praxis performance for those majoring in teacher's education department. This is only a part of the project. The end goal is to evalutate if a student's praxis score can predict wheather he or she becomes a successful teacher.
+
+## Data Source
+The data was collected from a higher-education instition in Idaho. Subjects are students from the institute's teacher education department. All students' identities are shielded. 
+
+
+## Data Definition
+* `student_id`: a unique identifier for students majoring in education department.
+
+* `test_name`: different praxis tests
+
+* `test_code`: a unique identifier for praxis tests
+
+* `first_score`: the score a student got when he or she first took the praxis test. If a student takes multiple praxis tests (different test codes), then he or she will have multiple first scores. 
+
+* `last_score`: the score a student got for his or her last praxis test. Again, if a student takes multiple praxis tests (different test codes), there will be multiple last scores. 
+
+* `n_attempt`: indicates the total attempts a student has for each praxis test he or she takes. For example, if a student took Middle School English Language Arts test 17 times, his n_attempt will be 17.  
+
+* `n_attempt_pass`: indicates the number of tests a student passed for a specific praxis test. For example, if a student took Middle School English Language Arts test 17 times and didn't pass any of it, then his n_attempt_pass will be 0. 
+
+* `ever_pass`: indicates if a student eventually passed the test or not. 
+
+* `state_passing_score`: indicates the minimum score a student is required to pass a certain praxis test. This threshold is determined by Idaho's education department. 
+
+* `first_test_date`: the first test date a student took his or her very first test. 
+
+* `last_test_date`: the last test data a student took his or her very last test. 
+
+
+## Data Summary
+
+Before diving in, here's a table showing all our collected data. 
+
+```{r, message=FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+library(readxl)
+library(tidyverse)
+library(data.table)
+library(lubridate)
+library(Hmisc)
+library(pander)
+library(DT)
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+path <- "/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/alice_in_dataland/posts/data_wrangling_project/final_praxis.csv"
+praxis <- read_csv(path)
+# show praxis data table???
+praxis %>% DT::datatable()
+```
+
+
+The following table is a quick data summary for our numerical columns. 
+
+```{r, message=FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+praxis %>%
+  select(first_score, last_score, n_attempt, n_attempt_pass, ever_pass, state_passing_score)%>%
+  summary %>% knitr::kable()
+```
+
+In total, we have 4,810 students in this data set and other than the Elem Ed tests (MS Mathematics Subtest, MS Science Subtest, MS Social Studies Subtest, and MS Reading & Language Arts Subtest), the most took 5 tests are the following: 
+* English Language Arts: Content Knowledge
+* Principles of Learn & Teaching: Grades K-6
+* Middle School English Language Arts
+* World and US History: Content Knowledge
+* Special Ed: Preschool/Early Childhood.
+
+## Graphs
+
+The following graph shows the most taken praxis test other than the 4 Elem Ed tests. 
+
+1. English Language Arts: Content Knowledge 
+2. Principles of Learn & Teaching: Grades K-6 
+3. Middle School English Language Arts 
+4. World and US History: Content Knowledge 
+5. Special Ed: Preschool/Early Childhood
+```{r}
+#| out-width: 100%
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Most Taken Praxis Test
+praxis %>% 
+  group_by(test_name) %>% 
+  summarise(total_count = n()) %>% 
+  arrange(desc(total_count)) %>% 
+  filter(total_count<1600) %>%
+  top_n(5, total_count) %>% 
+ggplot(aes(x = reorder(test_name, -total_count), y = total_count))+
+  geom_bar(stat = "identity", fill = "skyblue")+
+  theme_classic()+
+  geom_text(aes(label = total_count))+
+  theme(axis.text.x = element_text(angle = 90))+
+  labs(x = "Test Name", y = "Total Count", title = "Most Taken Praxis Test")+
+  theme(plot.title = element_text(face = "bold"))
+```
+
+This graph shows the tests having the highest retake rate. One thing to be aware of is that I filter to tests that have more than 100 attempts from students. 
+
+1. Middle School English Language Arts 
+2. Mathematics: Content Knowledge 
+3. Middle School Science 
+4. Elem Ed: MS Mathematics Subtest 
+5. Spanish: World Language
+```{r}
+#| out-width: 100%
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Most Retake% Praxis Test
+praxis|>
+  group_by(test_name) |>
+  summarise(
+    n_attempt = n(),
+    second_attempt = sum(!is.na(`2`)),
+    prop = round(second_attempt / n_attempt, 2)*100) |>
+  top_n(17, prop) |>
+  arrange(desc(prop)) |>
+  filter(n_attempt > 100) %>% 
+  ggplot(aes(x = reorder(test_name, -prop), y = prop))+
+  geom_bar(stat = "identity", fill = "skyblue")+
+  theme_classic()+
+  geom_text(aes(label= prop))+
+  theme(axis.text.x = element_text(angle = 90))+
+  labs(x = "Test Name", y = "Retake Rate(%)", title = "Praxis Tests with the Highest Retake Rate")+
+  theme(plot.title = element_text(face = "bold"))
+```
+
+
+The last graph shows the Lowest Pass Rate. Likewise, I also filtered this down to tests that have more than 100 attempts. 
+
+1. Elem Ed: CKT Social Studies Subtest
+2. Elem Ed: CKT REading & Language Arts Subtest
+3. Spanish: World Language
+4. Middle School English Language Arts
+5. Elem Ed: MS Mathematics Subtest
+```{r}
+#| out-width: 100%
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Low Pass%
+praxis|>
+  group_by(test_name) |>
+  summarise(
+    n_attempt = sum(n_attempt),
+    pass = sum(ever_pass),
+    prop = round(pass / n_attempt, 2)*100) |>
+  filter(prop!=100) |>
+  filter(n_attempt > 100) |>
+  top_n(-5, prop) |>
+  ggplot(aes(x = reorder(test_name, -prop), y = prop))+
+  geom_bar(stat = "identity", fill = "skyblue")+
+  theme_classic()+
+  geom_text(aes(label= prop))+
+  theme(axis.text.x = element_text(angle = 90))+
+  labs(x = "Test Name", y = "Pass Rate (%)", title = "Lowest Pass Rate")+
+  theme(plot.title = element_text(face = "bold"))
+```
+
+
+Lastly, the table below shows the total attempts by students for each test and its pass rate. It is ordered from the most taken to the least tests and the darker the shade for the pass rate cell, the higher the pass rate. 
+```{r}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+pass_rate <- praxis|>
+  group_by(test_name) |>
+  summarise(
+    n_attempt = sum(n_attempt),
+    pass = sum(ever_pass),
+    rate = round(pass / n_attempt, 2)*100) |>
+  arrange(desc(n_attempt), desc(rate)) |>
+  filter(n_attempt > 100)
+
+n <- c(seq(1, 100))
+
+brks <- quantile(n, probs = seq(.05, .95, .05), na.rm = TRUE)
+clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
+  {paste0("rgb(255,", ., ",", ., ")")}
+datatable(pass_rate) %>% formatStyle('rate', backgroundColor = styleInterval(brks, clrs))
+
+```
+
+## Data Wrangling Process
+
+When I first got my hands on this data set, each row represents all tests taken from all students. Since each student can take multiple praxis test, there are a lot of data. However, as a team, we decided to only narrow down to the first and last test score per student per test. 
+
+There are 4 main parts of data transformation: 
+
+1. Only remain the first and last test per student per test
+2. Calculate the # of attempts, # of passed attempts, if a student ever passed
+3. Grab the date for first and last test
+4. Join all data frames together
+
+The following are my code for data wrangling: 
+```{r}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+path <- "Praxis Data.xlsx"
+praxis <- read_excel(path)
+
+# Get First & Last Test Score
+first_last <- praxis |>
+  unique() |>
+  group_by(StudentID, TestName) |>
+  filter(TestDate == min(TestDate) | TestDate == max(TestDate)) |>
+  arrange(TestDate) |>
+  mutate(order = 1:n()) |>
+  ungroup() |>
+  select(StudentID, TestName, TestCode, Score, order) |>
+  pivot_wider(names_from = order, values_from = Score) |>
+  mutate(
+    last_score = ifelse(is.na(`2`), `1`, `2`))
+
+first_last <- first_last %>% 
+  rename(first_score = `1`)
+
+
+# TestCode, Ever Pass, # Attempt, Attempt Passed, Sate Standard
+attempt_test <- praxis %>% 
+  unique() %>% 
+  group_by(StudentID, TestName) %>%
+  mutate(
+    n_attempt = n(), 
+    n_attempt_pass = sum(ifelse(PassNotPass == "Passed", 1, 0)), 
+    ever_pass = ifelse(n_attempt_pass == 0, 0, 1)
+  ) %>% 
+  ungroup() %>% 
+  select(StudentID, TestCode, n_attempt, n_attempt_pass, ever_pass, StatePassingScore) %>% unique()
+
+# join first_last & attempt_test
+final <- left_join(first_last, attempt_test, by = c("StudentID", "TestCode")) 
+
+# Date First & Last 
+date <- praxis |>
+  unique() |>
+  group_by(StudentID, TestName) |>
+  filter(TestDate == min(TestDate) | TestDate == max(TestDate)) |>
+  arrange(TestDate) |>
+  mutate(order = 1:n()) |>
+  ungroup() |>
+  select(StudentID, TestName, TestCode, TestDate, order) |>
+  pivot_wider(names_from = order, values_from = TestDate) |>
+  mutate(
+  last_test = ifelse(is.na(`2`), `1`, `2`),
+   last_test_date = format(as.POSIXlt(last_test, origin = lubridate::origin),format='%Y-%m-%d'), 
+   last_test_date = as.Date(last_test_date) + days(1)) |>
+  select(StudentID, TestCode, `1`, last_test_date) |>
+  rename(first_test_date = `1`, student_id = StudentID, test_code = TestCode)
+
+final <- final %>% 
+  rename(student_id = StudentID, test_name = TestName, test_code = TestCode, state_passing_score = StatePassingScore)
+final <- left_join(final, date, by = c("student_id", "test_code"))
+```
+
+
+
+
+
+

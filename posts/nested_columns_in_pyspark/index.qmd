@@ -1,0 +1,132 @@
+---
+title: "Nested Columns in Pyspark"
+author: "Alice Pao"
+date: "2024-02-24"
+categories: [tutorial, code, polars]
+image: "parquet.jpg"
+---
+
+When dealing with great volume of data which we often refer to as "big data", it is common to have nested columns. They not only help with data format but also save a lot of memory. One of the most popular file formats that use nested columns is Parquet. Therefore, before jumping into nested columns, I want to spend some time explaining what Parquet is. 
+
+
+## What is Parquet? 
+[Apache Parquet](https://www.databricks.com/glossary/what-is-parquet), mostly called as Parquet, is an open source file format that saves column-based data, created by databricks. It provides efficient data storeage and retrival. It is used to handle complex data structure and it compresses and decompresses data in a more efficient way compared to other traditional file formats like CSV. 
+
+Parquet can store data including images, tables, videos, and documents. One of its benefits is its ability to skip data, meaning when data is read in by queries, instead of reading the entire table, it only grabs the specific columns where the queries specifiy. This saves a lot of data processing time. 
+
+Below is taken from [databricks](https://www.databricks.com/glossary/what-is-parquet). It compares Parquet with CVS. We can see that using Parquet file format is both cheaper and faster. Therefore, I highly recommend data science professionals familarize themselves with Parquet! 
+
+![](parquet_vs_cvs.png)
+
+
+## What is Nested Columns? 
+Now, let's talk about about nested columns. Just like the words suggest, a nested column is a column that has multiple comlumns nested in it. (I swear this is not a tongue twister!) You may ask, why do we need it? Well, having nested columns give us more flexibility as we can add additional columns into existing ones, which gives more control when we are dealing with complex data. 
+
+Here is an example of normal columns: 
+
+![](normal%20column.png)
+
+
+This one takes the `first name`, `middle name`, and `last name` columns and nest them into a `name` column. 
+
+![](nested_columns.png)
+
+By doing so, we make a cleaner and more organized data structure and also save some storage space and data retrieval time. 
+
+
+## Different Types of Nested Columns in Pyspark
+There are different types of nested columns we can utilize in Pyspark. 
+
+* ArrayType
+It is an array of data type. Users can store a collection of same type of elements. 
+
+* MapType
+It is a map of key value pairs in a DataFrame. Users can store key-value mappings. It is similar to a dictionary in python. 
+
+* StructType
+It is a list or tuple value type in Python. It stores a collection of StructField. 
+
+## How to Create Nested Columns? 
+
+Before creating any of these datatypes, we need to import the following function from pyspark. 
+
+```{python}
+# from pyspark.sql.types import *
+```
+
+Here are the parameters for each of the three data types: 
+
+* ArrayType: 
+1. elementType: Defines the DataType for all elements in the array
+2. containsNull: This is an optional parameter. It declares whether the array can have null values or not. 
+```{python}
+# Array_Data = [(3500, 5000, 8000, 2500, 4000)]
+
+
+# Array_Schema = ArrayType(IntegerType())
+# array = spark.createDataFrame(data = Array_Data, schema = Array_Schema)	
+# array.printSchema()	
+# display(array)	
+
+```
+
+The Result: 
+![](array_example.png)
+
+
+* MapType: 
+1. keyType: Defines the DataType for the keys in the map. 
+2. valueType: Defines the DataType for the values in the map. 
+3. valueContainsNull: This is an optional parameter. It declares whether the map can have null values or not. 
+
+```{python}
+# map_data = [('Katy Wellen', {'junior graphic designer':3500}), ('Samuel Komo', {'junior data analyst':5000}), ('Luke Hitch', {'senior data analyst':8000}), ('Mike Nelson', {'office assistant':2500}), ('Cathy Reid', {'project manager':4000})]
+# map_schema = StructType([
+#     StructField('full name', StringType(), True),
+#     StructField('position & salary', MapType(StringType(),IntegerType()),True)
+# ])
+# map = spark.createDataFrame(data = map_data, schema = map_schema)	
+# map.printSchema()	
+# display(map)
+```
+
+* StructType: 
+Before talking about StructType, we need to first understand StructField. StructField is an object that consists of name(a string), dataType, and the nullable. Here's an example: 
+
+```{python}
+# StructField("first_name", StringType(), True)
+```
+
+StructType is created by calling the StructField. For example: 
+
+```{python}
+# Structure_Data = [(("Katy","","Wellen"),"11111","F",3500),	
+#     (("Samuel","Komo",""),"22222","M",5000),	
+#     (("Luke","","Hitch"),"33333","M",8000),	
+#     (("Mike","Smith","Nelson"),"44444","M",2500),	
+#     (("Cathy","Reid","Brown"),"","F",4000)	
+#   ]	
+
+# Structure_Schema = StructType([	
+#         StructField('name', StructType([	
+#              StructField('first_name', StringType(), True),	
+#              StructField('middle_name', StringType(), True),	
+#              StructField('last_name', StringType(), True)	
+#              ])),	
+#          StructField('id', StringType(), True),	
+#          StructField('gender', StringType(), True),	
+#          StructField('salary', IntegerType(), True)	
+#          ])
+
+# dataframe = spark.createDataFrame(data = Structure_Data, schema = Structure_Schema)
+# dataframe.printSchema()	
+# display(dataframe)	
+
+```
+
+## How to "Unnest"?
+
+
+
+
+## Conclusion
