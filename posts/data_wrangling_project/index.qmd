@@ -1,8 +1,9 @@
 ---
 title: "Data Wrangling Project Showcase: Praxis Data"
 author: "Alice Pao"
-date: "2024-03-01"
+date: "2024-02-25"
 categories: [portfolio, r]
+image: ""
 ---
 
 This project is designed to show students' praxis performance for those majoring in teacher's education department. This is only a part of the project. The end goal is to evalutate if a student's praxis score can predict wheather he or she becomes a successful teacher.
@@ -33,6 +34,26 @@ The data was collected from a higher-education instition in Idaho. Subjects are 
 * `first_test_date`: the first test date a student took his or her very first test. 
 
 * `last_test_date`: the last test data a student took his or her very last test. 
+
+* `total_tests`: the total number count for each test. 
+
+* `average_first_score`: the average test score for all students first attempt.
+
+* `first_standard_deviation`: the standard deviation for all students' first attempt.
+
+* `first_z_score`: the z score for all students' first attempt.
+
+* `average_last_score`: the average test score for all students' last attempt. 
+
+* `last_standard_deviation`: the standard deviation for all students' last attempt.
+
+* `last_z_score`: the z score for all students' z score. 
+
+* `first_score_cutoff`: points away from the state's passing standard for a student's first attempt
+
+* `last_score_cutoff`: points away from the state's passing standard for a student's last attempt
+
+* `average_z_score`: the average z score taken from the first and last attempt z score
 
 
 ## Data Summary
@@ -270,10 +291,26 @@ date <- praxis |>
 final <- final %>% 
   rename(student_id = StudentID, test_name = TestName, test_code = TestCode, state_passing_score = StatePassingScore)
 final <- left_join(final, date, by = c("student_id", "test_code"))
+
+# Z Score
+final <- final %>%
+  # Z score
+  group_by(test_code) %>%
+  mutate(
+    # counting the total for each test
+    total_tests = n(),
+    # average score for each test
+    average_first_score = sum(first_score)/total_tests,
+    first_standard_deviation = sd(first_score),
+    first_z_score = round((first_score-average_first_score)/first_standard_deviation, 2), 
+    average_last_score = sum(last_score)/total_tests, 
+    last_standard_deviation = sd(last_score), 
+    last_z_score = round((last_score-average_last_score)/last_standard_deviation, 2), 
+    first_score_cutoff = first_score-state_passing_score, 
+    last_score_cutoff = last_score-state_passing_score
+    ) %>% 
+  ungroup() %>% 
+  mutate(
+    average_z_score = (first_z_score+last_z_score)/2
+  )
 ```
-
-
-
-
-
-
