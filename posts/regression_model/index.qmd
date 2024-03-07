@@ -1,0 +1,184 @@
+---
+title: "Logistic & Multiple Linear Regression Model for Praxis Scores"
+author: "Alice Pao"
+date: "2024-03-06"
+categories: [portfolio]
+image: ""
+---
+
+This post is to showcase my statistical analyses for praxis scores collected from students majoring in teacher education at an Idaho higher education institution. This project is part of [Benjamin Pacini's dissertation](https://sites.google.com/view/benjamin-pacini/dissertation/methodology). 
+
+The two research questions we are trying to answer are: 
+1. What predicts strong teaching? 
+2. How do measures of success correlate with each other? 
+
+In the attempt to answer these two questions, I run logistic and multiple linear regression models using the praxis data set I got. (for its data cleaning and transformation process, please refer to my [other blog post]())
+
+## What Predicts Strong Teaching? 
+
+For the following regression models, the target(y) will be different results for praxis scores and the features(x) will be different student demographics. 
+
+* Regression 1: Target is if a student ever pass praxis test. 0 means fail and 1 means pass. 
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+library(tidyverse)
+library(arrow)
+library(ResourceSelection)
+library(ggpubr)
+
+praxis <- read.csv("/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/final_praxis.csv", header = TRUE, stringsAsFactors = TRUE)
+demo <- read_parquet("/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/All_teacher_info.parquet")
+```
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# 1: Logistic Regression Model 
+# Logistic Regression Model: Ever Pass vs CurrentCumGPA
+praxis_ever_pass <- praxis %>% 
+  select(student_id, ever_pass) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_ever_pass <- inner_join(praxis_ever_pass, demo, by = c("student_id" = "StudentID"))
+praxis_ever_pass <- praxis_ever_pass %>% select(ever_pass:`Teaching Content`)
+
+glm_ever_pass_gpa <- glm(ever_pass ~ CurrentCumGPA, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_gpa)
+ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE)+
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Final Praxis Pass", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "Current Cumulative GPA" )
+```
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs CurrentCumGPA & Ethnicity
+glm_ever_pass_ethnicity <- glm(ever_pass ~ CurrentCumGPA*Ethnicity, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_ethnicity)
+ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color =Ethnicity))+
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Final Praxis Pass by Student's Ethnicity", 
+                   subtitle = "0 means the student never pass, 1 means the student passes", 
+                   y = "Ever Pass or not", x = "Current Cumulative GPA" )
+```
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs CurrentCumGPA & isMale
+glm_ever_pass_male <- glm(ever_pass ~ CurrentCumGPA*isMale, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_male)
+ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color =as.factor(isMale)))+
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Final Praxis Pass by Gender", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "Current Cumulative GPA", color = "Gender")+
+  scale_color_discrete(breaks=c("0", "1"),
+                      labels=c("Female", "Male"))
+```
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs ACTSAT_Scores
+glm_ever_pass_ACTSAT <- glm(ever_pass ~ ACTSAT_Scores, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_ACTSAT)
+ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE)+
+  theme_bw()+
+  labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "ACT or SAT Score")
+```
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs ACTSAT_Scores & Ethnicity
+glm_ever_pass_ACTSAT_ethnicity <- glm(ever_pass ~ ACTSAT_Scores*Ethnicity, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_ACTSAT_ethnicity)
+ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = Ethnicity))+
+  theme_bw()+
+  labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass by Ethnicity", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "ACT or SAT Score", color = "Ethnicity")
+```
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs ACTSAT_Scores & isMale
+glm_ever_pass_ACTSAT_male <- glm(ever_pass ~ ACTSAT_Scores*isMale, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_ACTSAT_male)
+ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = as.factor(isMale)))+
+  theme_bw()+
+  labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass by Gender", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "ACT or SAT Score", color = "Gender")+
+  scale_color_discrete(breaks= c("0", "1"), 
+                       labels = c("Female", "Male"))
+```
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs CurrentCumGPA & ReceivedPell
+glm_ever_pass_pell <- glm(ever_pass ~ CurrentCumGPA*ReceivedPell, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_pell)
+ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = as.factor(ReceivedPell)))+
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Final Praxis Pass for Pell Grant Receivers", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "Current Cumulative GPA", color = "Pell Grant Receiver or not")+
+  scale_color_discrete(breaks= c("0", "1"), 
+                       labels = c("No", "Yes"))
+```
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs ACTSAT_Scores & ReceivedPell
+glm_ever_pass_pell_act <- glm(ever_pass ~ ACTSAT_Scores*ReceivedPell, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_pell_act)
+ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = as.factor(ReceivedPell)))+
+  theme_bw()+
+  labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass for Pell Grant Receipients", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "ACT or SAT Score", color = "Pell Grant Receiver or not")+
+  scale_color_discrete(breaks= c("0", "1"), 
+                       labels = c("No", "Yes"))
+```
+
+
+* Regression 2: Target is a student's first attempt praxis z score
+
+
+* Regression 3: Target is a student's last attempt praxis z score
+
+
+* Regression 4: Target is a student's last attempt score points from the state's passing standard

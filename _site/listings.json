@@ -2,8 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/regression_model/index.html",
       "/posts/data_wrangling_project/index.html",
-      "/posts/windows_function_in_pyspark/index.html",
       "/posts/nested_columns_in_pyspark/index.html",
       "/posts/pull_data_from_census/index.html"
     ]
