@@ -197,6 +197,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>Regression 1: Target is if a student ever pass praxis test. 0 means fail and 1 means pass.</li>
 </ul>
+<p>In total, we have 4695 student subjects. 401 students never passed their praxis tests while 4228 students eventually passed praxis. We have 66 students didn’t indicate whether they passed praxis or not. In all the models I ran, these NAs were omitted.</p>
+<section id="does-current-cumulative-college-gpa-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-predict-if-a-student-eventually-passes-praxis-test-or-not">Does Current Cumulative College GPA predict if a student eventually passes praxis test or not?</h3>
+<p>For this model, I set to be 0.05. The following is the result of the model. We see that the p-value for Current Cumulative GPA variable is smaller than 0.05. Therefore, we can make an inference that current cumulative GPA is somewhat useful when it comes to predicting if a student can pass praxis test or not. However, since the AIC score for this model is 2628, it means that this model isn’t the most accurate.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -219,45 +223,73 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">student_id =</span> <span class="fu">as.character</span>(student_id))</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>praxis_ever_pass <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(praxis_ever_pass, demo, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"student_id"</span> <span class="ot">=</span> <span class="st">"StudentID"</span>))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>praxis_ever_pass <span class="ot">&lt;-</span> praxis_ever_pass <span class="sc">%&gt;%</span> <span class="fu">select</span>(ever_pass<span class="sc">:</span><span class="st">`</span><span class="at">Teaching Content</span><span class="st">`</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>praxis_ever_pass <span class="ot">&lt;-</span> praxis_ever_pass <span class="sc">%&gt;%</span> <span class="fu">relocate</span>(ever_pass, <span class="at">.before =</span> <span class="st">"student_id"</span>) <span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_gpa <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_gpa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_gpa) <span class="sc">%&gt;%</span> pander<span class="sc">::</span><span class="fu">pander</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ CurrentCumGPA, family = binomial, data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.8202   0.2099   0.2637   0.3305   1.0686  
-
-Coefficients:
-              Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)   -2.20309    0.29491   -7.47 7.99e-14 ***
-CurrentCumGPA  1.54026    0.08969   17.17  &lt; 2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 5048.5  on 13300  degrees of freedom
-Residual deviance: 4770.3  on 13299  degrees of freedom
-  (85 observations deleted due to missingness)
-AIC: 4774.3
-
-Number of Fisher Scoring iterations: 6</code></pre>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 15%">
+<col style="width: 18%">
+<col style="width: 13%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">&nbsp;</th>
+<th style="text-align: center;">Estimate</th>
+<th style="text-align: center;">Std. Error</th>
+<th style="text-align: center;">z value</th>
+<th style="text-align: center;">Pr(&gt;|z|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>(Intercept)</strong></td>
+<td style="text-align: center;">-1.684</td>
+<td style="text-align: center;">0.3814</td>
+<td style="text-align: center;">-4.415</td>
+<td style="text-align: center;">1.012e-05</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA</strong></td>
+<td style="text-align: center;">1.195</td>
+<td style="text-align: center;">0.1148</td>
+<td style="text-align: center;">10.41</td>
+<td style="text-align: center;">2.238e-25</td>
+</tr>
+</tbody>
+</table>
+<p>(Dispersion parameter for binomial family taken to be 1 )</p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 38%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Null deviance:</td>
+<td style="text-align: center;">2728 on 4628 degrees of freedom</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Residual deviance:</td>
+<td style="text-align: center;">2624 on 4627 degrees of freedom</td>
+</tr>
+</tbody>
+</table>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass"</span>, </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass"</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -266,431 +298,398 @@ Number of Fisher Scoring iterations: 6</code></pre>
 </figure>
 </div>
 </div>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not">Does Current Cumulative College GPA by Ethnicity predict if a student eventually passes praxis test or not?</h3>
+<p>For this model, I added Ethnicity to be another feature becuase I am curious if Ethnicity can contribute to the prediction. Again the AIC score is 2639.4 which is too high (the lower the AIC score, the more fitted a model is)</p>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; Ethnicity</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>Ethnicity, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_ethnicity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; Ethnicity</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>Ethnicity, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_ethnicity) <span class="sc">%&gt;%</span> pander<span class="sc">::</span> <span class="fu">pander</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ CurrentCumGPA * Ethnicity, family = binomial, 
-    data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.8694   0.2118   0.2473   0.3364   1.0951  
-
-Coefficients:
-                                                Estimate Std. Error z value
-(Intercept)                                      -3.8225     3.1452  -1.215
-CurrentCumGPA                                     1.8707     0.9806   1.908
-EthnicityAsian                                    1.7404     3.7353   0.466
-EthnicityBlack                                    5.0966     4.3881   1.161
-EthnicityHawaiian, Pacific Island                 3.0035     7.8396   0.383
-EthnicityHispanic, Latino                         2.7644     3.2461   0.852
-EthnicityOther                                   -1.4473     8.6368  -0.168
-EthnicityTwo or More Ethnicities                  1.8387     3.4166   0.538
-EthnicityUnknown                                 -1.4101     4.2284  -0.333
-EthnicityWhite                                    1.6388     3.1635   0.518
-CurrentCumGPA:EthnicityAsian                     -0.5988     1.1448  -0.523
-CurrentCumGPA:EthnicityBlack                     -1.6167     1.3458  -1.201
-CurrentCumGPA:EthnicityHawaiian, Pacific Island  -0.6960     2.3157  -0.301
-CurrentCumGPA:EthnicityHispanic, Latino          -0.8913     1.0114  -0.881
-CurrentCumGPA:EthnicityOther                      0.5723     2.5138   0.228
-CurrentCumGPA:EthnicityTwo or More Ethnicities   -0.6789     1.0668  -0.636
-CurrentCumGPA:EthnicityUnknown                    0.4899     1.3052   0.375
-CurrentCumGPA:EthnicityWhite                     -0.2996     0.9860  -0.304
-                                                Pr(&gt;|z|)  
-(Intercept)                                       0.2242  
-CurrentCumGPA                                     0.0564 .
-EthnicityAsian                                    0.6413  
-EthnicityBlack                                    0.2455  
-EthnicityHawaiian, Pacific Island                 0.7016  
-EthnicityHispanic, Latino                         0.3944  
-EthnicityOther                                    0.8669  
-EthnicityTwo or More Ethnicities                  0.5905  
-EthnicityUnknown                                  0.7388  
-EthnicityWhite                                    0.6044  
-CurrentCumGPA:EthnicityAsian                      0.6009  
-CurrentCumGPA:EthnicityBlack                      0.2296  
-CurrentCumGPA:EthnicityHawaiian, Pacific Island   0.7637  
-CurrentCumGPA:EthnicityHispanic, Latino           0.3782  
-CurrentCumGPA:EthnicityOther                      0.8199  
-CurrentCumGPA:EthnicityTwo or More Ethnicities    0.5245  
-CurrentCumGPA:EthnicityUnknown                    0.7074  
-CurrentCumGPA:EthnicityWhite                      0.7612  
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 5048.5  on 13300  degrees of freedom
-Residual deviance: 4712.2  on 13283  degrees of freedom
-  (85 observations deleted due to missingness)
-AIC: 4748.2
-
-Number of Fisher Scoring iterations: 6</code></pre>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Table continues below</caption>
+<colgroup>
+<col style="width: 49%">
+<col style="width: 16%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">&nbsp;</th>
+<th style="text-align: center;">Estimate</th>
+<th style="text-align: center;">Std. Error</th>
+<th style="text-align: center;">z value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>(Intercept)</strong></td>
+<td style="text-align: center;">2.269</td>
+<td style="text-align: center;">5.684</td>
+<td style="text-align: center;">0.3991</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA</strong></td>
+<td style="text-align: center;">4.644e-13</td>
+<td style="text-align: center;">1.662</td>
+<td style="text-align: center;">2.794e-13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityAsian</strong></td>
+<td style="text-align: center;">-6.041</td>
+<td style="text-align: center;">6.259</td>
+<td style="text-align: center;">-0.9652</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityBlack</strong></td>
+<td style="text-align: center;">-1.197</td>
+<td style="text-align: center;">7.094</td>
+<td style="text-align: center;">-0.1687</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityHawaiian, Pacific Island</strong></td>
+<td style="text-align: center;">-1.998</td>
+<td style="text-align: center;">9.631</td>
+<td style="text-align: center;">-0.2074</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityHispanic, Latino</strong></td>
+<td style="text-align: center;">-2.881</td>
+<td style="text-align: center;">5.795</td>
+<td style="text-align: center;">-0.4971</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityOther</strong></td>
+<td style="text-align: center;">-5.383</td>
+<td style="text-align: center;">9.966</td>
+<td style="text-align: center;">-0.5402</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityTwo or More Ethnicities</strong></td>
+<td style="text-align: center;">-3.587</td>
+<td style="text-align: center;">6.147</td>
+<td style="text-align: center;">-0.5836</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityUnknown</strong></td>
+<td style="text-align: center;">-6.696</td>
+<td style="text-align: center;">6.397</td>
+<td style="text-align: center;">-1.047</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityWhite</strong></td>
+<td style="text-align: center;">-3.958</td>
+<td style="text-align: center;">5.7</td>
+<td style="text-align: center;">-0.6944</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityAsian</strong></td>
+<td style="text-align: center;">1.593</td>
+<td style="text-align: center;">1.83</td>
+<td style="text-align: center;">0.8705</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityBlack</strong></td>
+<td style="text-align: center;">0.1923</td>
+<td style="text-align: center;">2.1</td>
+<td style="text-align: center;">0.09157</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityHawaiian, Pacific Island</strong></td>
+<td style="text-align: center;">0.5616</td>
+<td style="text-align: center;">2.815</td>
+<td style="text-align: center;">0.1995</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityHispanic, Latino</strong></td>
+<td style="text-align: center;">0.7103</td>
+<td style="text-align: center;">1.698</td>
+<td style="text-align: center;">0.4183</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityOther</strong></td>
+<td style="text-align: center;">1.587</td>
+<td style="text-align: center;">2.881</td>
+<td style="text-align: center;">0.5508</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityTwo or More Ethnicities</strong></td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1.816</td>
+<td style="text-align: center;">0.5509</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityUnknown</strong></td>
+<td style="text-align: center;">1.826</td>
+<td style="text-align: center;">1.883</td>
+<td style="text-align: center;">0.9695</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityWhite</strong></td>
+<td style="text-align: center;">1.223</td>
+<td style="text-align: center;">1.667</td>
+<td style="text-align: center;">0.7333</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 51%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">&nbsp;</th>
+<th style="text-align: center;">Pr(&gt;|z|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>(Intercept)</strong></td>
+<td style="text-align: center;">0.6898</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA</strong></td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityAsian</strong></td>
+<td style="text-align: center;">0.3344</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityBlack</strong></td>
+<td style="text-align: center;">0.866</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityHawaiian, Pacific Island</strong></td>
+<td style="text-align: center;">0.8357</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityHispanic, Latino</strong></td>
+<td style="text-align: center;">0.6191</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityOther</strong></td>
+<td style="text-align: center;">0.5891</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityTwo or More Ethnicities</strong></td>
+<td style="text-align: center;">0.5595</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EthnicityUnknown</strong></td>
+<td style="text-align: center;">0.2952</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EthnicityWhite</strong></td>
+<td style="text-align: center;">0.4875</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityAsian</strong></td>
+<td style="text-align: center;">0.384</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityBlack</strong></td>
+<td style="text-align: center;">0.927</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityHawaiian, Pacific Island</strong></td>
+<td style="text-align: center;">0.8419</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityHispanic, Latino</strong></td>
+<td style="text-align: center;">0.6757</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityOther</strong></td>
+<td style="text-align: center;">0.5817</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityTwo or More Ethnicities</strong></td>
+<td style="text-align: center;">0.5817</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityUnknown</strong></td>
+<td style="text-align: center;">0.3323</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CurrentCumGPA:EthnicityWhite</strong></td>
+<td style="text-align: center;">0.4634</td>
+</tr>
+</tbody>
+</table>
+<p>(Dispersion parameter for binomial family taken to be 1 )</p>
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 38%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Null deviance:</td>
+<td style="text-align: center;">2728 on 4628 degrees of freedom</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Residual deviance:</td>
+<td style="text-align: center;">2603 on 4611 degrees of freedom</td>
+</tr>
+</tbody>
+</table>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span>Ethnicity))<span class="sc">+</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass by Student's Ethnicity"</span>, </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span>Ethnicity))<span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass by Student's Ethnicity"</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; isMale</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_male)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ CurrentCumGPA * isMale, family = binomial, 
-    data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.8276   0.2122   0.2649   0.3358   1.1361  
-
-Coefficients:
-                     Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)          -2.48930    0.31926  -7.797 6.34e-15 ***
-CurrentCumGPA         1.61711    0.09649  16.759  &lt; 2e-16 ***
-isMale                1.45842    0.89637   1.627    0.104    
-CurrentCumGPA:isMale -0.38306    0.28411  -1.348    0.178    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 5048.5  on 13300  degrees of freedom
-Residual deviance: 4763.9  on 13297  degrees of freedom
-  (85 observations deleted due to missingness)
-AIC: 4771.9
-
-Number of Fisher Scoring iterations: 6</code></pre>
 </div>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span><span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass by Gender"</span>, </span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Gender"</span>)<span class="sc">+</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>),</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; isMale</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span><span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass by Gender"</span>, </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Gender"</span>)<span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                      <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_ACTSAT)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ ACTSAT_Scores, family = binomial, data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--3.5224   0.1320   0.1899   0.3259   1.3441  
-
-Coefficients:
-              Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)   -4.40827    0.32592  -13.53   &lt;2e-16 ***
-ACTSAT_Scores  0.36586    0.01696   21.57   &lt;2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 3823.9  on 10817  degrees of freedom
-Residual deviance: 3240.0  on 10816  degrees of freedom
-  (2568 observations deleted due to missingness)
-AIC: 3244
-
-Number of Fisher Scoring iterations: 7</code></pre>
 </div>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass"</span>, </span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass"</span>, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-4.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; Ethnicity</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>Ethnicity, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_ACTSAT_ethnicity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ ACTSAT_Scores * Ethnicity, family = binomial, 
-    data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--3.4942   0.1348   0.1911   0.3210   1.3680  
-
-Coefficients:
-                                                  Estimate Std. Error z value
-(Intercept)                                     -5.836e+00  2.549e+00  -2.290
-ACTSAT_Scores                                    4.123e-01  1.422e-01   2.899
-EthnicityAsian                                  -1.222e+00  3.872e+00  -0.316
-EthnicityBlack                                   7.091e+00  6.156e+00   1.152
-EthnicityHawaiian, Pacific Island                2.540e+01  1.204e+04   0.002
-EthnicityHispanic, Latino                       -9.170e-01  2.873e+00  -0.319
-EthnicityOther                                  -3.811e+02  6.957e+03  -0.055
-EthnicityTwo or More Ethnicities                -3.949e+00  4.517e+00  -0.874
-EthnicityUnknown                                 6.112e+00  3.768e+00   1.622
-EthnicityWhite                                   1.747e+00  2.573e+00   0.679
-ACTSAT_Scores:EthnicityAsian                     3.700e-02  2.045e-01   0.181
-ACTSAT_Scores:EthnicityBlack                    -3.458e-01  3.180e-01  -1.088
-ACTSAT_Scores:EthnicityHawaiian, Pacific Island -4.123e-01  5.147e+02  -0.001
-ACTSAT_Scores:EthnicityHispanic, Latino          7.355e-02  1.612e-01   0.456
-ACTSAT_Scores:EthnicityOther                     2.454e+01  4.452e+02   0.055
-ACTSAT_Scores:EthnicityTwo or More Ethnicities   2.363e-01  2.538e-01   0.931
-ACTSAT_Scores:EthnicityUnknown                  -2.795e-01  1.922e-01  -1.454
-ACTSAT_Scores:EthnicityWhite                    -6.083e-02  1.434e-01  -0.424
-                                                Pr(&gt;|z|)   
-(Intercept)                                      0.02202 * 
-ACTSAT_Scores                                    0.00375 **
-EthnicityAsian                                   0.75233   
-EthnicityBlack                                   0.24934   
-EthnicityHawaiian, Pacific Island                0.99832   
-EthnicityHispanic, Latino                        0.74959   
-EthnicityOther                                   0.95631   
-EthnicityTwo or More Ethnicities                 0.38200   
-EthnicityUnknown                                 0.10482   
-EthnicityWhite                                   0.49712   
-ACTSAT_Scores:EthnicityAsian                     0.85645   
-ACTSAT_Scores:EthnicityBlack                     0.27677   
-ACTSAT_Scores:EthnicityHawaiian, Pacific Island  0.99936   
-ACTSAT_Scores:EthnicityHispanic, Latino          0.64821   
-ACTSAT_Scores:EthnicityOther                     0.95605   
-ACTSAT_Scores:EthnicityTwo or More Ethnicities   0.35188   
-ACTSAT_Scores:EthnicityUnknown                   0.14590   
-ACTSAT_Scores:EthnicityWhite                     0.67139   
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 3823.9  on 10817  degrees of freedom
-Residual deviance: 3210.3  on 10800  degrees of freedom
-  (2568 observations deleted due to missingness)
-AIC: 3246.3
-
-Number of Fisher Scoring iterations: 18</code></pre>
 </div>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> Ethnicity))<span class="sc">+</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass by Ethnicity"</span>, </span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Ethnicity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; Ethnicity</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>Ethnicity, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> Ethnicity))<span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass by Ethnicity"</span>, </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Ethnicity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-5.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; isMale</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_ACTSAT_male)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ ACTSAT_Scores * isMale, family = binomial, 
-    data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--3.6749   0.1161   0.1978   0.3350   1.4402  
-
-Coefficients:
-                     Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)          -4.29241    0.34207 -12.548   &lt;2e-16 ***
-ACTSAT_Scores         0.35723    0.01765  20.238   &lt;2e-16 ***
-isMale               -3.09229    1.34866  -2.293   0.0219 *  
-ACTSAT_Scores:isMale  0.20820    0.07812   2.665   0.0077 ** 
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 3823.9  on 10817  degrees of freedom
-Residual deviance: 3222.1  on 10814  degrees of freedom
-  (2568 observations deleted due to missingness)
-AIC: 3230.1
-
-Number of Fisher Scoring iterations: 7</code></pre>
 </div>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass by Gender"</span>, </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Gender"</span>)<span class="sc">+</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; isMale</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass by Gender"</span>, </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Gender"</span>)<span class="sc">+</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-6.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; ReceivedPell</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_pell <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>ReceivedPell, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_pell)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ CurrentCumGPA * ReceivedPell, family = binomial, 
-    data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.8255   0.2110   0.2593   0.3229   1.1403  
-
-Coefficients:
-                           Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)                 -2.4899     0.4317  -5.768 8.02e-09 ***
-CurrentCumGPA                1.6112     0.1301  12.382  &lt; 2e-16 ***
-ReceivedPell                 0.4879     0.5930   0.823    0.411    
-CurrentCumGPA:ReceivedPell  -0.1174     0.1803  -0.651    0.515    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 5048.5  on 13300  degrees of freedom
-Residual deviance: 4768.2  on 13297  degrees of freedom
-  (85 observations deleted due to missingness)
-AIC: 4776.2
-
-Number of Fisher Scoring iterations: 6</code></pre>
 </div>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass for Pell Grant Receipients"</span>, </span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Pell Grant Receiver or not"</span>)<span class="sc">+</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; ReceivedPell</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_pell <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>ReceivedPell, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass for Pell Grant Receivers"</span>, </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Pell Grant Receiver or not"</span>)<span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-7.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; ReceivedPell</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_pell_act <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>ReceivedPell, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_pell_act)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = ever_pass ~ ACTSAT_Scores * ReceivedPell, family = binomial, 
-    data = praxis_ever_pass)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--3.5882   0.1235   0.1966   0.3244   1.2672  
-
-Coefficients:
-                           Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)                -3.93331    0.45390  -8.666   &lt;2e-16 ***
-ACTSAT_Scores               0.34217    0.02332  14.671   &lt;2e-16 ***
-ReceivedPell               -0.96583    0.65365  -1.478    0.140    
-ACTSAT_Scores:ReceivedPell  0.04869    0.03401   1.432    0.152    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 3823.9  on 10817  degrees of freedom
-Residual deviance: 3237.8  on 10814  degrees of freedom
-  (2568 observations deleted due to missingness)
-AIC: 3245.8
-
-Number of Fisher Scoring iterations: 7</code></pre>
 </div>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass for Pell Grant Receipients"</span>, </span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Pell Grant Receiver or not"</span>)<span class="sc">+</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; ReceivedPell</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_pell_act <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>ReceivedPell, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass for Pell Grant Receipients"</span>, </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Pell Grant Receiver or not"</span>)<span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-8.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -702,6 +701,7 @@ Number of Fisher Scoring iterations: 7</code></pre>
 </ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
