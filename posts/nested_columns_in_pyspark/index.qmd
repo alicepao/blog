@@ -54,7 +54,7 @@ Before creating any of these datatypes, we need to import the following function
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-# from pyspark.sql.types import *
+from pyspark.sql.types import *
 ```
 
 Here are the parameters for each of the three data types: 
@@ -66,13 +66,13 @@ Here are the parameters for each of the three data types:
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-# Array_Data = [(3500, 5000, 8000, 2500, 4000)]
+Array_Data = [(3500, 5000, 8000, 2500, 4000)]
 
 
-# Array_Schema = ArrayType(IntegerType())
-# array = spark.createDataFrame(data = Array_Data, schema = Array_Schema)	
-# array.printSchema()	
-# display(array)	
+Array_Schema = ArrayType(IntegerType())
+array = spark.createDataFrame(data = Array_Data, schema = Array_Schema)	
+array.printSchema()	
+display(array)	
 
 ```
 
@@ -91,14 +91,14 @@ The Result:
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-# map_data = [('Katy Wellen', {'junior graphic designer':3500}), ('Samuel Komo', {'junior data analyst':5000}), ('Luke Hitch', {'senior data analyst':8000}), ('Mike Nelson', {'office assistant':2500}), ('Cathy Reid', {'project manager':4000})]
-# map_schema = StructType([
-#     StructField('full name', StringType(), True),
-#     StructField('position & salary', MapType(StringType(),IntegerType()),True)
-# ])
-# map = spark.createDataFrame(data = map_data, schema = map_schema)	
-# map.printSchema()	
-# display(map)
+map_data = [('Katy Wellen', {'junior graphic designer':3500}), ('Samuel Komo', {'junior data analyst':5000}), ('Luke Hitch', {'senior data analyst':8000}), ('Mike Nelson', {'office assistant':2500}), ('Cathy Reid', {'project manager':4000})]
+map_schema = StructType([
+    StructField('full name', StringType(), True),
+    StructField('position & salary', MapType(StringType(),IntegerType()),True)
+])
+map = spark.createDataFrame(data = map_data, schema = map_schema)	
+map.printSchema()	
+display(map)
 ```
 
 * StructType: 
@@ -108,7 +108,7 @@ Before talking about StructType, we need to first understand StructField. Struct
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-# StructField("first_name", StringType(), True)
+StructField("first_name", StringType(), True)
 ```
 
 StructType is created by calling the StructField. For example: 
@@ -117,27 +117,27 @@ StructType is created by calling the StructField. For example:
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-# Structure_Data = [(("Katy","","Wellen"),"11111","F",3500),	
-#     (("Samuel","Komo",""),"22222","M",5000),	
-#     (("Luke","","Hitch"),"33333","M",8000),	
-#     (("Mike","Smith","Nelson"),"44444","M",2500),	
-#     (("Cathy","Reid","Brown"),"","F",4000)	
-#   ]	
+Structure_Data = [(("Katy","","Wellen"),"11111","F",3500),	
+    (("Samuel","Komo",""),"22222","M",5000),	
+    (("Luke","","Hitch"),"33333","M",8000),	
+    (("Mike","Smith","Nelson"),"44444","M",2500),	
+    (("Cathy","Reid","Brown"),"","F",4000)	
+  ]	
 
-# Structure_Schema = StructType([	
-#         StructField('name', StructType([	
-#              StructField('first_name', StringType(), True),	
-#              StructField('middle_name', StringType(), True),	
-#              StructField('last_name', StringType(), True)	
-#              ])),	
-#          StructField('id', StringType(), True),	
-#          StructField('gender', StringType(), True),	
-#          StructField('salary', IntegerType(), True)	
-#          ])
+Structure_Schema = StructType([	
+        StructField('name', StructType([	
+             StructField('first_name', StringType(), True),	
+             StructField('middle_name', StringType(), True),	
+             StructField('last_name', StringType(), True)	
+             ])),	
+         StructField('id', StringType(), True),	
+         StructField('gender', StringType(), True),	
+         StructField('salary', IntegerType(), True)	
+         ])
 
-# dataframe = spark.createDataFrame(data = Structure_Data, schema = Structure_Schema)
-# dataframe.printSchema()	
-# display(dataframe)	
+dataframe = spark.createDataFrame(data = Structure_Data, schema = Structure_Schema)
+dataframe.printSchema()	
+display(dataframe)	
 
 ```
 
@@ -149,10 +149,10 @@ The easieset way is to use `explode` function. For example, let's use our `map` 
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-# map_explode = map.select('full name', F.explode(map['position & salary'])).withColumnRenamed(
-#     'key', 'position').withColumnRenamed('value', 'salary')
+map_explode = map.select('full name', F.explode(map['position & salary'])).withColumnRenamed(
+    'key', 'position').withColumnRenamed('value', 'salary')
 
-# display(map_explode)
+display(map_explode)
 ```
 Here's a snapshot before unnesting: 
 ![](unnest_before.png)
