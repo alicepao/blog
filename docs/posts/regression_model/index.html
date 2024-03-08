@@ -203,7 +203,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>For this model, I set to be 0.05. The following is the result of the model. We see that the p-value for Current Cumulative GPA variable is smaller than 0.05. Therefore, we can make an inference that current cumulative GPA is somewhat useful when it comes to predicting if a student can pass praxis test or not. However, since the AIC score for this model is 2628, it means that this model isn’t the most accurate.</p>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ResourceSelection)</span>
@@ -215,7 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1: Logistic Regression Model </span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>praxis_ever_pass <span class="ot">&lt;-</span> praxis <span class="sc">%&gt;%</span> </span>
@@ -282,7 +282,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>For this model, I added Ethnicity to be another feature becuase I am curious if Ethnicity can contribute to the prediction. Again the AIC score is 2639.4 which is too high (the lower the AIC score, the more fitted a model is)</p>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; Ethnicity</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>Ethnicity, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_ethnicity) <span class="sc">%&gt;%</span> pander<span class="sc">::</span> <span class="fu">pander</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -543,7 +543,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span>Ethnicity))<span class="sc">+</span></span>
@@ -562,7 +562,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; isMale</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
@@ -585,7 +585,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
@@ -606,7 +606,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; Ethnicity</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>Ethnicity, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
@@ -627,7 +627,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; isMale</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
@@ -650,7 +650,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; ReceivedPell</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_pell <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>ReceivedPell, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
@@ -673,7 +673,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Code</summary>
+<summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; ReceivedPell</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_pell_act <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>ReceivedPell, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
