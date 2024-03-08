@@ -314,3 +314,6 @@ final <- final %>%
     average_z_score = (first_z_score+last_z_score)/2
   )
 ```
+
+
+*Note:The data wrangling thumbnail image is taken from [this website](https://towardsdatascience.com/data-wrangling-raw-to-clean-transformation-b30a27bf4b3b)*

@@ -22,8 +22,8 @@ For the following regression models, the target(y) will be different results for
 
 In total, we have 4695 student subjects. 401 students never passed their praxis tests while 4228 students eventually passed praxis. We have 66 students didn't indicate whether they passed praxis or not. In all the models I ran, these NAs were omitted. 
 
-### Does Current Cumulative College GPA predict if a student eventually passes praxis test or not? 
-For this model, I set \alpha to be 0.05. The following is the result of the model. We see that the p-value for Current Cumulative GPA variable is smaller than 0.05. Therefore, we can make an inference that current cumulative GPA is somewhat useful when it comes to predicting if a student can pass praxis test or not. However, since the AIC score for this model is 2628, it means that this model isn't the most accurate.
+### Does *current cumulative college GPA* predict if a student eventually passes praxis test or not? 
+For this model, I set *alpha* to be 0.05; the following is the result of the model. We see that the p-value for Current Cumulative GPA variable is smaller than 0.05. Therefore, we can make an inference that current cumulative GPA is somewhat useful when it comes to predicting if a student can pass praxis test or not. However, since the AIC score for this model is 2628, it means that this model isn't the most accurate.
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
@@ -62,24 +62,46 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
        y = "Ever Pass or not", x = "Current Cumulative GPA" )
 ```
 
-### Does Current Cumulative College GPA by Ethnicity predict if a student eventually passes praxis test or not? 
-For this model, I added Ethnicity to be another feature becuase I am curious if Ethnicity can contribute to the prediction. Again the AIC score is 2639.4 which is too high (the lower the AIC score, the more fitted a model is)
+### Does *current cumulative college GPA by ethnicity* predict if a student eventually passes praxis test or not? 
+For this model, I added ethnicity to be another feature becuase I am curious if ethnicity can contribute to the prediction. The original data has 9 different ethinicity groups; however, for the sake of simplicity, some of them are grouped together. 
+
+Here are the final ethnicity groups: 
+* American Indian/Alaskan & Hawaiian, Pacific Islander
+* Black
+* Hispanic
+* Two or more ethnicities
+* Other & unknown
+* White
+
+From the table below, none of the variables p-value are smaller than 0.05. The AIC score is 2631.8 which is too high (the lower the AIC score, the more fitted a model is)
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
 # Logistic Regression Model: Ever Pass vs CurrentCumGPA & Ethnicity
-glm_ever_pass_ethnicity <- glm(ever_pass ~ CurrentCumGPA*Ethnicity, data = praxis_ever_pass, family = binomial)
-summary(glm_ever_pass_ethnicity) %>% pander:: pander()
-ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
+ever_pass_ethnicity <- praxis_ever_pass %>% 
+                        mutate(Ethnicity = case_when(Ethnicity == "American Indian/Alaskan" | Ethnicity == "Hawaiian, Pacific Island" ~ "American Indian/Alaskan & Hawaiian, Pacific Islander", 
+                                                     Ethnicity == "Black" ~ "Black", 
+                                                     Ethnicity == "Hispanic, Latino" ~ "Hispanic", 
+                                                     Ethnicity == "Two or More Ethnicities" ~ "Two or More Ethnicities", 
+                                                     Ethnicity == "Asian" ~ "Asian", 
+                                                     Ethnicity == "Other" | Ethnicity == "Unknown" ~ "Other & Unknown", 
+                                                     Ethnicity == "White" ~ "White", 
+                                                     TRUE ~ "BLANK"))
+glm_ever_pass_ethnicity <- glm(ever_pass ~ CurrentCumGPA*Ethnicity, data = ever_pass_ethnicity, family = binomial)
+summary(glm_ever_pass_ethnicity)
+ggplot(data = ever_pass_ethnicity, aes(x=CurrentCumGPA, y = ever_pass))+
   geom_point()+
   geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color =Ethnicity))+
   theme_bw()+
   labs(title = "Current Cumulative GPA vs Final Praxis Pass by Student's Ethnicity", 
-                   subtitle = "0 means the student never passes, 1 means the student passes", 
+                   subtitle = "0 means the student never pass, 1 means the student passes", 
                    y = "Ever Pass or not", x = "Current Cumulative GPA" )
 ```
 
+### Does *current cumulative college GPA by gender* predict if a student eventually passes praxis test or not? 
+
+This model analyzes if the cumulative college gpa and gender can predict passing praxis test. From the graph, there isn't any strong indication that gender contribute to this prediction. 
 
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
@@ -97,6 +119,8 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
   scale_color_discrete(breaks=c("0", "1"),
                       labels=c("Female", "Male"))
 ```
+
+
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
