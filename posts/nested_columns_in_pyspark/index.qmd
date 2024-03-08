@@ -2,7 +2,7 @@
 title: "Nested Columns in Pyspark"
 author: "Alice Pao"
 date: "2024-02-24"
-categories: [tutorial, code, polars]
+categories: [tutorial, code, pyspark]
 image: "parquet.jpg"
 ---
 

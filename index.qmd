@@ -1,5 +1,5 @@
 ---
-title: "Data Science Blog"
+title: "Alice in Dataland"
 listing:
   contents: posts
   sort: "date desc"
