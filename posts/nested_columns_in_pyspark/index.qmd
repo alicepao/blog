@@ -4,6 +4,10 @@ author: "Alice Pao"
 date: "2024-02-24"
 categories: [tutorial, code, pyspark]
 image: "parquet.jpg"
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
 ---
 
 When dealing with great volume of data which we often refer to as "big data", it is common to have nested columns. They not only help with data format but also save a lot of memory. One of the most popular file formats that use nested columns is Parquet. Therefore, before jumping into nested columns, I want to spend some time explaining what Parquet is. 
