@@ -3,6 +3,7 @@ project:
   output-dir: docs
 
 website:
+  title: "Alice in Dataland"
   navbar:
     right:
       - about.qmd

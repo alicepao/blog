@@ -2,8 +2,8 @@
 title: "Logistic & Multiple Linear Regression Model for Praxis Scores"
 author: "Alice Pao"
 date: "2024-03-06"
-categories: [portfolio]
-image: ""
+categories: [portfolio, r]
+image: "logistic regression.png"
 ---
 
 This post is to showcase my statistical analyses for praxis scores collected from students majoring in teacher education at an Idaho higher education institution. This project is part of [Benjamin Pacini's dissertation](https://sites.google.com/view/benjamin-pacini/dissertation/methodology). 
