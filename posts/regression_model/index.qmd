@@ -51,15 +51,15 @@ praxis_ever_pass <- praxis %>%
 praxis_ever_pass <- inner_join(praxis_ever_pass, demo, by = c("student_id" = "StudentID"))
 praxis_ever_pass <- praxis_ever_pass %>% relocate(ever_pass, .before = "student_id") %>% unique()
 
-glm_ever_pass_gpa <- glm(ever_pass ~ CurrentCumGPA, data = praxis_ever_pass, family = binomial)
-summary(glm_ever_pass_gpa) %>% pander::pander()
 ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
-  geom_point()+
-  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE)+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x) + 
   theme_bw()+
   labs(title = "Current Cumulative GPA vs Final Praxis Pass", 
-       subtitle = "0 means the student never passes, 1 means the student passes", 
-       y = "Ever Pass or not", x = "Current Cumulative GPA" )
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "Current Cumulative GPA")+
+  geom_hline(yintercept =1, linetype = "dashed", color = "red")
 ```
 
 ### Does *current cumulative college GPA by ethnicity* predict if a student eventually passes praxis test or not? 
@@ -91,8 +91,9 @@ ever_pass_ethnicity <- praxis_ever_pass %>%
 glm_ever_pass_ethnicity <- glm(ever_pass ~ CurrentCumGPA*Ethnicity, data = ever_pass_ethnicity, family = binomial)
 summary(glm_ever_pass_ethnicity)
 ggplot(data = ever_pass_ethnicity, aes(x=CurrentCumGPA, y = ever_pass))+
-  geom_point()+
-  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color =Ethnicity))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = Ethnicity)) + 
   theme_bw()+
   labs(title = "Current Cumulative GPA vs Final Praxis Pass by Student's Ethnicity", 
                    subtitle = "0 means the student never pass, 1 means the student passes", 
@@ -110,17 +111,63 @@ This model analyzes if the cumulative college gpa and gender can predict passing
 # Logistic Regression Model: Ever Pass vs CurrentCumGPA & isMale
 glm_ever_pass_male <- glm(ever_pass ~ CurrentCumGPA*isMale, data = praxis_ever_pass, family = binomial)
 ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
-  geom_point()+
-  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color =as.factor(isMale)))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = as.factor(isMale))) + 
   theme_bw()+
   labs(title = "Current Cumulative GPA vs Final Praxis Pass by Gender", 
-       subtitle = "0 means the student never passes, 1 means the student passes", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
        y = "Ever Pass or not", x = "Current Cumulative GPA", color = "Gender")+
   scale_color_discrete(breaks=c("0", "1"),
-                      labels=c("Female", "Male"))
+                      labels=c("Female", "Male"))+
+  geom_hline(yintercept =1, linetype = "dashed", color = "red")
 ```
 
-/
+### Does *current cumulative college GPA with pell grant receiver* predict if a student eventually passes praxis test or not? 
+
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs CurrentCumGPA & ReceivedPell
+ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = as.factor(ReceivedPell))) + 
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Final Praxis Pass for Pell Grant Receipients", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "Current Cumulative GPA", color = "Pell Grant Receiver or not")+
+  scale_color_discrete(breaks= c("0", "1"), 
+                       labels = c("No", "Yes"))+
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red")
+```
+
+
+### Does *current cumulative college GPA with returned missionary* predict if a student eventually passes praxis test or not? 
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs CurrentCumGPA & ServedMission
+
+ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = as.factor(ServedMission))) + 
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Final Praxis Pass by Gender", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "Current Cumulative GPA", color = "Mission")+
+  scale_color_discrete(breaks=c("FALSE", "TRUE"),
+                       labels=c("Non-returned Missionary", "Returned Missionary"))+
+  geom_hline(yintercept =1, linetype = "dashed", color = "red")
+```
+
+### Does *self-reported ACT & SAT score* predict if a student eventually passes praxis test or not? 
+
+
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
@@ -136,6 +183,9 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
        y = "Ever Pass or not", x = "ACT or SAT Score")
 ```
 
+### Does *self-reported ACT & SAT score by Ethnicity* predict if a student eventually passes praxis test or not? 
+
+
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
@@ -150,6 +200,8 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
        subtitle = "0 means the student never passes, 1 means the student passes", 
        y = "Ever Pass or not", x = "ACT or SAT Score", color = "Ethnicity")
 ```
+
+### Does *self-reported ACT & SAT score by gender* predict if a student eventually passes praxis test or not? 
 
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
@@ -168,6 +220,33 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
                        labels = c("Female", "Male"))
 ```
 
+
+### Does *self-reported ACT & SAT score with returned missionary* predict if a student eventually passes praxis test or not? 
+
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs ACTSAT_Scores & ServedMission
+
+ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = as.factor(ServedMission))) + 
+  theme_bw()+
+  labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass With Students Serving or Not Serving Mission", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "ACT or SAT Score", color = "Mission")+
+  scale_color_discrete(breaks= c("FALSE", "TRUE"), 
+                       labels = c("Non-returned Missionary", "Returned Missionary"))+
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red")
+
+
+```
+
+
+### Does *self-reported ACT & SAT score with pell grant receiver* predict if a student eventually passes praxis test or not? 
+
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
@@ -185,23 +264,85 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
                        labels = c("No", "Yes"))
 ```
 
+### Does *self-reported high school GPA* predict if a student eventually passes praxis test or not? 
+
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-# Logistic Regression Model: Ever Pass vs ACTSAT_Scores & ReceivedPell
-glm_ever_pass_pell_act <- glm(ever_pass ~ ACTSAT_Scores*ReceivedPell, data = praxis_ever_pass, family = binomial)
-ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
-  geom_point()+
-  geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = as.factor(ReceivedPell)))+
+# Logistic Regression Model: Ever Pass vs HighSchoolGPA 
+ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x) + 
   theme_bw()+
-  labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass for Pell Grant Receipients", 
-       subtitle = "0 means the student never passes, 1 means the student passes", 
-       y = "Ever Pass or not", x = "ACT or SAT Score", color = "Pell Grant Receiver or not")+
-  scale_color_discrete(breaks= c("0", "1"), 
-                       labels = c("No", "Yes"))
+  labs(title = "Self-Reported High School GPA vs Final Praxis Pass", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "High School GPA")+
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red")
 ```
 
+### Does *self-reported high school GPA by ethnicity* predict if a student eventually passes praxis test or not? 
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs HighSchoolGPA 
+ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = as.factor(Ethnicity))) + 
+  theme_bw()+
+  labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass for Pell Grant Receipients", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "High School GPA", color = "Pell Grant Receiver or not")+
+  scale_color_discrete(breaks= c("0", "1"), 
+                       labels = c("No", "Yes"))+
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red")
+```
+
+### Does *self-reported high school GPA by gender* predict if a student eventually passes praxis test or not? 
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs HighSchoolGPA & isMale
+ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = as.factor(isMale))) + 
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Final Praxis Pass by Gender", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "High School GPA", color = "Gender")+
+  scale_color_discrete(breaks=c("0", "1"),
+                       labels=c("Female", "Male"))+
+  geom_hline(yintercept =1, linetype = "dashed", color = "red")
+
+```
+
+### Does *self-reported high school GPA with returned missionary* predict if a student eventually passes praxis test or not? 
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Logistic Regression Model: Ever Pass vs HighSchoolGPA & ServedMission
+ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
+  stat_smooth(method='glm', method.args = list(family = "binomial"),
+              formula = y ~ x, aes(color = as.factor(ServedMission))) + 
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Final Praxis Pass with Returned Missionary", 
+       subtitle = "0 means the student never pass, 1 means the student passes", 
+       y = "Ever Pass or not", x = "High School GPA", color = "Mission")+
+  scale_color_discrete(breaks=c("FALSE", "TRUE"),
+                       labels=c("Non-returned Missionary", "Returned Missionary"))+
+  geom_hline(yintercept =1, linetype = "dashed", color = "red")
+
+```
 
 * Regression 2: Target is a student's first attempt praxis z score
 
