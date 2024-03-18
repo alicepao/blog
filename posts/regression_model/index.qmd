@@ -346,6 +346,19 @@ ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
 
 * Regression 2: Target is a student's first attempt praxis z score
 
+### Does *current cumulative college GPA* predict a student's first attempt praxis performance or not? 
+
+```{r, message = FALSE, warning = FALSE}
+praxis_first_zscore <- praxis %>% 
+  select(student_id, first_z_score) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_first_zscore <- inner_join(praxis_first_zscore, demo, by = c("student_id" = "StudentID")) %>% 
+  relocate(first_z_score, .before = "student_id") %>% unique()
+
+```
+
+
 
 * Regression 3: Target is a student's last attempt praxis z score
 
