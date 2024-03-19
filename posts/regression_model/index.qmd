@@ -531,7 +531,7 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as
 # First Praxis Z Score vs ACTSAT_Score & ServedMission
 fpz_act_mission <- lm(first_z_score ~ ACTSAT_Scores + as.factor(ServedMission) + ACTSAT_Scores:as.factor(ServedMission), data = praxis_first_zscore)
 summary(fpz_act_mission)
-b <- coef(fpz_act_pell)
+b <- coef(fpz_act_mission)
 ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as.factor(ServedMission)))+
   geom_point(alpha = 0.2)+
   stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
@@ -625,7 +625,7 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = HighSchoolGPA, color = as
 # First Praxis Z Score vs HighSchoolGPA & ServedMission
 fpz_high_mission <- lm(first_z_score ~ HighSchoolGPA + as.factor(ServedMission) + HighSchoolGPA:as.factor(ServedMission), data = praxis_first_zscore)
 summary(fpz_high_mission)
-b <- coef(fpz_high_pell)
+b <- coef(fpz_high_mission)
 ggplot(praxis_first_zscore, aes(y = first_z_score, x = HighSchoolGPA, color = as.factor(ServedMission)))+
   geom_point(alpha = 0.2)+
   stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
