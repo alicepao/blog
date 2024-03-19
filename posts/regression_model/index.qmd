@@ -123,7 +123,7 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
   geom_hline(yintercept =1, linetype = "dashed", color = "red")
 ```
 
-### Does *current cumulative college GPA with pell grant receiver* predict if a student eventually passes praxis test or not? 
+### Does *current cumulative college GPA with pell grant* predict if a student eventually passes praxis test or not? 
 
 ```{r, message = FALSE, warning = FALSE}
 #| echo: true
@@ -144,7 +144,7 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
 ```
 
 
-### Does *current cumulative college GPA with returned missionary* predict if a student eventually passes praxis test or not? 
+### Does *current cumulative college GPA with mission* predict if a student eventually passes praxis test or not? 
 
 ```{r}
 #| echo: true
@@ -207,6 +207,8 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
+
+
 # Logistic Regression Model: Ever Pass vs ACTSAT_Scores & isMale
 glm_ever_pass_ACTSAT_male <- glm(ever_pass ~ ACTSAT_Scores*isMale, data = praxis_ever_pass, family = binomial)
 ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
@@ -221,7 +223,7 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
 ```
 
 
-### Does *self-reported ACT & SAT score with returned missionary* predict if a student eventually passes praxis test or not? 
+### Does *self-reported ACT & SAT score with mission* predict if a student eventually passes praxis test or not? 
 
 ```{r, message = FALSE, warning = FALSE}
 #| echo: true
@@ -245,12 +247,14 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
 ```
 
 
-### Does *self-reported ACT & SAT score with pell grant receiver* predict if a student eventually passes praxis test or not? 
+### Does *self-reported ACT & SAT score with pell grant* predict if a student eventually passes praxis test or not? 
 
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
+
+
 # Logistic Regression Model: Ever Pass vs CurrentCumGPA & ReceivedPell
 glm_ever_pass_pell <- glm(ever_pass ~ CurrentCumGPA*ReceivedPell, data = praxis_ever_pass, family = binomial)
 ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
@@ -323,12 +327,14 @@ ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
 
 ```
 
-### Does *self-reported high school GPA with returned missionary* predict if a student eventually passes praxis test or not? 
+### Does *self-reported high school GPA with mission* predict if a student eventually passes praxis test or not? 
 
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
+
+
 # Logistic Regression Model: Ever Pass vs HighSchoolGPA & ServedMission
 ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
   geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
@@ -343,6 +349,7 @@ ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
   geom_hline(yintercept =1, linetype = "dashed", color = "red")
 
 ```
+
 
 * Regression 2: Target is a student's first attempt praxis z score
 
@@ -369,7 +376,7 @@ praxis_first_zscore <- inner_join(praxis_first_zscore, demo, by = c("student_id"
 
 ```
 
-### Does *current cumulative college GPA by Gender* predict a student's first attempt praxis performance or not? 
+### Does *current cumulative college GPA by gender* predict a student's first attempt praxis performance or not? 
 ```{r, message = FALSE, warning = FALSE}
 #| echo: true
 #| code-fold: true
@@ -389,11 +396,12 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = CurrentCumGPA, color = as
 
 ```
 
-### Does *current cumulative college GPA with Pell Grant* predict a student's first attempt praxis performance or not? 
+### Does *current cumulative college GPA with pell grant* predict a student's first attempt praxis performance or not? 
 ```{r, message = FALSE, warning = FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
+
 # First Praxis Z Score vs CurrentCumGPA & isMale
 fpz_ccgpa_pell <- lm(first_z_score ~ CurrentCumGPA + as.factor(ReceivedPell) + CurrentCumGPA:as.factor(ReceivedPell), data = praxis_first_zscore)
 summary(fpz_ccgpa_pell)
@@ -410,7 +418,7 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = CurrentCumGPA, color = as
 
 ```
 
-### Does *current cumulative college GPA with Mission* predict a student's first attempt praxis performance or not? 
+### Does *current cumulative college GPA with mission* predict a student's first attempt praxis performance or not? 
 ```{r, message = FALSE, warning = FALSE}
 #| echo: true
 #| code-fold: true
@@ -459,26 +467,6 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores))+
 
 ```
 
-### Does *self-reported ACT and SAT score by enthnicity* predict a student's first attempt praxis performance or not? 
-```{r, message = FALSE, warning = FALSE}
-#| echo: true
-#| code-fold: true
-#| #| code-summary: "expand for full code"
-
-# First Praxis Z Score vs ACTSAT_Score & isMale
-fpz_act_gender <- lm(first_z_score ~ ACTSAT_Scores + as.factor(isMale) + ACTSAT_Scores:as.factor(isMale), data = praxis_first_zscore)
-summary(fpz_act_gender)
-b <- coef(fpz_act_gender)
-ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as.factor(isMale)))+
-  geom_point(alpha = 0.2)+
-  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
-  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
-  theme_bw()+
-  labs(title = "Self-Reported ACT & SAT Score vs First Praxis Z score by Gender", 
-       y = "First Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Gender')+
-  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
-```
-
 ### Does *self-reported ACT and SAT score by gender* predict a student's first attempt praxis performance or not? 
 ```{r, message = FALSE, warning = FALSE}
 #| echo: true
@@ -498,7 +486,6 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as
        y = "First Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Gender')+
   scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
 ```
-
 
 ### Does *self-reported ACT and SAT score with pell grant* predict a student's first attempt praxis performance or not? 
 ```{r, message = FALSE, warning = FALSE}
@@ -639,8 +626,588 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = HighSchoolGPA, color = as
 ```
 
 
-
 * Regression 3: Target is a student's last attempt praxis z score
 
 
+### Does *current cumulative college GPA* predict a student's last attempt praxis performance or not? 
+
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+praxis_last_zscore <- praxis %>% 
+  select(student_id, last_z_score) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_last_zscore <- inner_join(praxis_last_zscore, demo, by = c("student_id" = "StudentID")) %>% 
+  relocate(last_z_score, .before = "student_id") %>% unique()
+
+# Last Praxis Z Score vs CurrentCumGPA
+lpz_ccgpa <- lm(last_z_score ~ CurrentCumGPA, data = praxis_last_zscore)
+summary(lpz_ccgpa)
+ggplot(praxis_first_zscore, aes(x = CurrentCumGPA, y = first_z_score))+
+  geom_point()+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Last Praxis Attempt Z Score", 
+       y = "Last Attempt Praxis", x = "Current Cumulative GPA")
+
+```
+
+### Does *current cumulative college GPA by Ethnicity* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+```
+
+### Does *current cumulative college GPA by gender* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Last Praxis Z Score vs CurrentCumGPA & isMale
+lpz_ccgpa_gender <- lm(last_z_score ~ CurrentCumGPA + as.factor(isMale) + CurrentCumGPA:as.factor(isMale), data = praxis_last_zscore)
+summary(lpz_ccgpa_gender)
+b <- coef(lpz_ccgpa_gender)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = CurrentCumGPA, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #female line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs Last Praxis Z score By Gender", 
+       y = "Last Attempt Praxis Z Score", x = "Current Cummulative GPA", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+
+```
+
+### Does *current cumulative college GPA with pell grant* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Last Praxis Z Score vs CurrentCumGPA & ReceivedPell
+lpz_ccgpa_pell <- lm(last_z_score ~ CurrentCumGPA + as.factor(ReceivedPell) + CurrentCumGPA:as.factor(ReceivedPell), data = praxis_last_zscore)
+summary(lpz_ccgpa_pell)
+b <- coef(lpz_ccgpa_pell)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = CurrentCumGPA, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #non-pell line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs Last Praxis Z score with Pell Grant", 
+       y = "Last Attempt Praxis Z Score", x = "Current Cummulative GPA", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+```
+
+### Does *current cumulative college GPA with mission* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs CurrentCumGPA & ServedMission
+lpz_ccgpa_mission <- lm(last_z_score ~ CurrentCumGPA + ServedMission + CurrentCumGPA:ServedMission, data = praxis_last_zscore)
+summary(lpz_ccgpa_mission)
+b <- coef(lpz_ccgpa_mission)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = CurrentCumGPA, color = ServedMission))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-return missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #returned missionary line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs Last Praxis Z score with Mission", 
+       y = "Last Attempt Praxis Z Score", x = "Current Cummulative GPA", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Returned Missionary', 'Non-Returned Missionary'))
+
+
+```
+
+### Does *self-reported ACT and SAT score* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs ACTSAT_Score
+lpz_act <- lm(last_z_score ~ ACTSAT_Scores, data = praxis_last_zscore)
+summary(lpz_act)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = ACTSAT_Scores))+
+  geom_point(alpha = 0.2)+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Praxis Z score", 
+       y = "Last Attempt Praxis Z Score", x = "ACT & SAT Score")
+
+```
+
+### Does *self-reported ACT and SAT score by enthnicity* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs ACTSAT_Score & Ethnicity
+
+```
+
+### Does *self-reported ACT and SAT score by gender* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs ACTSAT_Score & isMale
+lpz_act_gender <- lm(last_z_score ~ ACTSAT_Scores + as.factor(isMale) + ACTSAT_Scores:as.factor(isMale), data = praxis_last_zscore)
+summary(lpz_act_gender)
+b <- coef(fpz_act_gender)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = ACTSAT_Scores, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Praxis Z score by Gender", 
+       y = "Last Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+```
+
+### Does *self-reported ACT and SAT score with pell grant* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs ACTSAT_Score & ReceivedPell
+lpz_act_pell <- lm(last_z_score ~ ACTSAT_Scores + as.factor(ReceivedPell) + ACTSAT_Scores:as.factor(ReceivedPell), data = praxis_last_zscore)
+summary(lpz_act_pell)
+b <- coef(lpz_act_pell)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = ACTSAT_Scores, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #non-pell line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Praxis Z score with Pell Grant", 
+       y = "Last Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+
+```
+
+
+### Does *self-reported ACT and SAT score with mission* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs ACTSAT_Score & ServedMission
+lpz_act_mission <- lm(last_z_score ~ ACTSAT_Scores + as.factor(ServedMission) + ACTSAT_Scores:as.factor(ServedMission), data = praxis_last_zscore)
+summary(lpz_act_mission)
+b <- coef(lpz_act_mission)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = ACTSAT_Scores, color = as.factor(ServedMission)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #returned missionary line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Praxis Z score with Mission", 
+       y = "Last Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Rerturned Missionary', 'Non-Returned Missionary'))
+
+```
+
+### Does *self-reported high school GPA* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs HigSchoolGPA
+lpz_high <- lm(last_z_score ~ HighSchoolGPA, data = praxis_last_zscore)
+summary(lpz_high)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = HighSchoolGPA))+
+  geom_point(alpha = 0.2)+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Praxis Z score", 
+       y = "Last Attempt Praxis Z Score", x = "High School GPA")
+
+```
+
+### Does *self-reported high school GPA by ethnicity* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs HigSchoolGPA & Ethnicity
+
+
+```
+
+### Does *self-reported high school GPA by gender* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs HighSchoolGPA & isMale
+lpz_high_gender <- lm(last_z_score ~ HighSchoolGPA + as.factor(isMale) + HighSchoolGPA:as.factor(isMale), data = praxis_last_zscore)
+summary(lpz_high_gender)
+b <- coef(lpz_high_gender)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = HighSchoolGPA, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Praxis Z score by Gender", 
+       y = "Last Attempt Praxis Z Score", x = "High School GPA", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+
+
+```
+
+### Does *self-reported high school GPA with pell grant* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs HighSchoolGPA & ReceivedPell
+lpz_high_pell <- lm(last_z_score ~ HighSchoolGPA + as.factor(ReceivedPell) + HighSchoolGPA:as.factor(ReceivedPell), data = praxis_last_zscore)
+summary(lpz_high_pell)
+b <- coef(lpz_high_pell)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = HighSchoolGPA, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #non-pell line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Praxis Z score with Pell Grant", 
+       y = "Last Attempt Praxis Z Score", x = "High School GPA", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+
+```
+
+### Does *self-reported high school GPA with mission* predict a student's last attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Praxis Z Score vs HighSchoolGPA & ServedMission
+lpz_high_mission <- lm(last_z_score ~ HighSchoolGPA + as.factor(ServedMission) + HighSchoolGPA:as.factor(ServedMission), data = praxis_last_zscore)
+summary(lpz_high_mission)
+b <- coef(lpz_high_mission)
+ggplot(praxis_last_zscore, aes(y = last_z_score, x = HighSchoolGPA, color = as.factor(ServedMission)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #returned missionary line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Praxis Z score with Mission", 
+       y = "Last Attempt Praxis Z Score", x = "High School GPA", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Rerturned Missionary', 'Non-Returned Missionary'))
+
+
+```
+
 * Regression 4: Target is a student's last attempt score points from the state's passing standard
+
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+praxis_last_cutoff <- praxis %>% 
+  select(student_id, last_score_cutoff) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_last_cutoff <- inner_join(praxis_last_cutoff, demo, by = c("student_id" = "StudentID")) %>% 
+  relocate(last_score_cutoff, .before = "student_id") %>% unique()
+```
+
+### Does *current cumulative college GPA* predict a student's last attempt praxis points from state passing standard or not? 
+
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+praxis_last_zscore <- praxis %>% 
+  select(student_id, last_z_score) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_last_zscore <- inner_join(praxis_last_zscore, demo, by = c("student_id" = "StudentID")) %>% 
+  relocate(last_z_score, .before = "student_id") %>% unique()
+
+# Last Attempt Score Points from State Passing Standard vs CurrentCumGPA
+lc_ccgpa <- lm(last_score_cutoff ~ CurrentCumGPA, data = praxis_last_cutoff)
+summary(lc_ccgpa)
+ggplot(praxis_last_cutoff, aes(x = CurrentCumGPA, y = last_score_cutoff))+
+  geom_point()+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Current Cumulative GPA vs Last Attempt Points from State Passing Standard", 
+       y = "Last Attempt Points From Standard", x = "Current Cumulative GPA")
+
+```
+
+### Does *current cumulative college GPA by ethnicity* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+```
+
+### Does *current cumulative college GPA by gender* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Last Attempt Score Points from State Passing Standard vs CurrentCumGPA & isMale
+lc_ccgpa_gender <- lm(last_score_cutoff ~ CurrentCumGPA + as.factor(isMale) + CurrentCumGPA:as.factor(isMale), data = praxis_last_cutoff)
+summary(lc_ccgpa_gender)
+b <- coef(lc_ccgpa_gender)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = CurrentCumGPA, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #female line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs Last Attempt Points from State Passing Standard by Gender", 
+       y = "Last Attempt Points From Standard", x = "Current Cummulative GPA", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+
+```
+
+### Does *current cumulative college GPA with pell grant* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# Last Attempt Score Points from State Passing Standard vs CurrentCumGPA & ReceivedPell
+lc_ccgpa_pell <- lm(last_score_cutoff ~ CurrentCumGPA + as.factor(ReceivedPell) + CurrentCumGPA:as.factor(ReceivedPell), data = praxis_last_cutoff)
+summary(lc_ccgpa_pell)
+b <- coef(lc_ccgpa_pell)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = CurrentCumGPA, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #non-pell line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs Last Attempt Points from State Passing Standard with Pell Grant", 
+       y = "Last Attempt Points From Standard", x = "Current Cummulative GPA", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+
+```
+
+### Does *current cumulative college GPA with mission* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs CurrentCumGPA & ServedMission
+lc_ccgpa_mission <- lm(last_score_cutoff ~ CurrentCumGPA + ServedMission + CurrentCumGPA:ServedMission, data = praxis_last_cutoff)
+summary(lc_ccgpa_mission)
+b <- coef(lc_ccgpa_mission)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = CurrentCumGPA, color = ServedMission))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-return missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #returned missionary line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs Last Attempt Points from State Passing Standard with Mission", 
+       y = "Last Attempt Points From Standard", x = "Current Cummulative GPA", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Returned Missionary', 'Non-Returned Missionary'))
+
+
+```
+
+### Does *self-reported ACT and SAT score* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs ACTSAT_Score
+lc_act <- lm(last_score_cutoff ~ ACTSAT_Scores, data = praxis_last_cutoff)
+summary(lc_act)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = ACTSAT_Scores))+
+  geom_point(alpha = 0.2)+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Attempt Points from State Passing Standard", 
+       y = "Last Attempt Points From Standard", x = "ACT & SAT Score")
+
+
+```
+
+### Does *self-reported ACT and SAT score by enthnicity* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs ACTSAT_Score & Ethnicity
+
+```
+
+### Does *self-reported ACT and SAT score by gender* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs ACTSAT_Score & isMale
+lc_act_gender <- lm(last_score_cutoff ~ ACTSAT_Scores + as.factor(isMale) + ACTSAT_Scores:as.factor(isMale), data = praxis_last_cutoff)
+summary(lc_act_gender)
+b <- coef(lc_act_gender)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = ACTSAT_Scores, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Attempt Points from State Passing Standard by Gender", 
+       y = "Last Attempt Points From Standard", x = "ACT & SAT Score", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+```
+
+### Does *self-reported ACT and SAT score with pell grant* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs ACTSAT_Score & ReceivedPell
+lc_act_pell <- lm(last_score_cutoff ~ ACTSAT_Scores + as.factor(ReceivedPell) + ACTSAT_Scores:as.factor(ReceivedPell), data = praxis_last_cutoff)
+summary(lc_act_pell)
+b <- coef(lc_act_pell)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = ACTSAT_Scores, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #non-pell line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Attempt Points from State Passing Standard with Pell Grant", 
+       y = "Last Attempt Points From Standard", x = "ACT & SAT Score", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+
+```
+
+
+### Does *self-reported ACT and SAT score with mission* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs ACTSAT_Score & ServedMission
+lc_act_mission <- lm(last_score_cutoff~ ACTSAT_Scores + as.factor(ServedMission) + ACTSAT_Scores:as.factor(ServedMission), data = praxis_last_cutoff)
+summary(lc_act_mission)
+b <- coef(lc_act_mission)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = ACTSAT_Scores, color = as.factor(ServedMission)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #returned missionary line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs Last Attempt Points from State Passing Standard with Mission", 
+       y = "Last Attempt Points From Standard", x = "ACT & SAT Score", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Rerturned Missionary', 'Non-Returned Missionary'))
+
+```
+
+
+
+
+### Does *self-reported high school GPA* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs HigSchoolGPA
+lc_high <- lm(last_score_cutoff ~ HighSchoolGPA, data = praxis_last_cutoff)
+summary(lc_high)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = HighSchoolGPA))+
+  geom_point(alpha = 0.2)+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Attempt Points from State Passing Standard", 
+       y = "Last Attempt Points From Standard", x = "High School GPA")
+
+```
+
+### Does *self-reported high school GPA by ethnicity* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs HigSchoolGPA & Ethnicity
+
+
+```
+
+### Does *self-reported high school GPA by gender* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs HighSchoolGPA & isMale
+lc_high_gender <- lm(last_score_cutoff ~ HighSchoolGPA + as.factor(isMale) + HighSchoolGPA:as.factor(isMale), data = praxis_last_cutoff)
+summary(lc_high_gender)
+b <- coef(lc_high_gender)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = HighSchoolGPA, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Attempt Points from State Passing Standard by Gender", 
+       y = "Last Attempt Points From Standard", x = "High School GPA", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+
+
+```
+
+### Does *self-reported high school GPA with pell grant* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs HighSchoolGPA & ReceivedPell
+lc_high_pell <- lm(last_score_cutoff ~ HighSchoolGPA + as.factor(ReceivedPell) + HighSchoolGPA:as.factor(ReceivedPell), data = praxis_last_cutoff)
+summary(lc_high_pell)
+b <- coef(lc_high_pell)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = HighSchoolGPA, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #non-pell line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Attempt Points from State Passing Standard with Pell Grant", 
+       y = "Last Attempt Points From Standard", x = "High School GPA", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+
+```
+
+### Does *self-reported high school GPA with mission* predict a student's last attempt praxis points from state passing standard or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# Last Attempt Score Points from State Passing Standard vs HighSchoolGPA & ServedMission
+lc_high_mission <- lm(last_score_cutoff ~ HighSchoolGPA + as.factor(ServedMission) + HighSchoolGPA:as.factor(ServedMission), data = praxis_last_cutoff)
+summary(lc_high_mission)
+b <- coef(lc_high_mission)
+ggplot(praxis_last_cutoff, aes(y = last_score_cutoff, x = HighSchoolGPA, color = as.factor(ServedMission)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #returned missionary line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs Last Attempt Points from State Passing Standard with Mission", 
+       y = "Last Attempt Points From Standard", x = "High School GPA", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Rerturned Missionary', 'Non-Returned Missionary'))
+
+```
