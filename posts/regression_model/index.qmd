@@ -175,7 +175,7 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
 # Logistic Regression Model: Ever Pass vs ACTSAT_Scores
 glm_ever_pass_ACTSAT <- glm(ever_pass ~ ACTSAT_Scores, data = praxis_ever_pass, family = binomial)
 ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
-  geom_point()+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
   geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE)+
   theme_bw()+
   labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass", 
@@ -193,7 +193,7 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
 # Logistic Regression Model: Ever Pass vs ACTSAT_Scores & Ethnicity
 glm_ever_pass_ACTSAT_ethnicity <- glm(ever_pass ~ ACTSAT_Scores*Ethnicity, data = praxis_ever_pass, family = binomial)
 ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
-  geom_point()+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
   geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = Ethnicity))+
   theme_bw()+
   labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass by Ethnicity", 
@@ -210,7 +210,7 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
 # Logistic Regression Model: Ever Pass vs ACTSAT_Scores & isMale
 glm_ever_pass_ACTSAT_male <- glm(ever_pass ~ ACTSAT_Scores*isMale, data = praxis_ever_pass, family = binomial)
 ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
-  geom_point()+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
   geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = as.factor(isMale)))+
   theme_bw()+
   labs(title = "Self-Reported ACT and SAT Score vs Final Praxis Pass by Gender", 
@@ -254,7 +254,7 @@ ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
 # Logistic Regression Model: Ever Pass vs CurrentCumGPA & ReceivedPell
 glm_ever_pass_pell <- glm(ever_pass ~ CurrentCumGPA*ReceivedPell, data = praxis_ever_pass, family = binomial)
 ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
-  geom_point()+
+  geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
   geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE, aes(color = as.factor(ReceivedPell)))+
   theme_bw()+
   labs(title = "Current Cumulative GPA vs Final Praxis Pass for Pell Grant Receivers", 
