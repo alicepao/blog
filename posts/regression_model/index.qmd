@@ -146,7 +146,7 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
 
 ### Does *current cumulative college GPA with mission* predict if a student eventually passes praxis test or not? 
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
