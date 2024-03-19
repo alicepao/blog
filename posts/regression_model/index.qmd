@@ -466,7 +466,7 @@ ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores))+
 #| #| code-summary: "expand for full code"
 
 # First Praxis Z Score vs ACTSAT_Score & isMale
-fpz_act_gender <- lm(first_z_score ~ ACTSAT_Scores + as.facotr(isMale) + ACTSAT_Scores:as.factor(isMale), data = praxis_first_zscore)
+fpz_act_gender <- lm(first_z_score ~ ACTSAT_Scores + as.factor(isMale) + ACTSAT_Scores:as.factor(isMale), data = praxis_first_zscore)
 summary(fpz_act_gender)
 b <- coef(fpz_act_gender)
 ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as.factor(isMale)))+
