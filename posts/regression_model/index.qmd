@@ -349,12 +349,292 @@ ggplot(data = praxis_ever_pass, aes(x=HighSchoolGPA, y = ever_pass))+
 ### Does *current cumulative college GPA* predict a student's first attempt praxis performance or not? 
 
 ```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
 praxis_first_zscore <- praxis %>% 
   select(student_id, first_z_score) %>% 
   mutate(student_id = as.character(student_id))
 
 praxis_first_zscore <- inner_join(praxis_first_zscore, demo, by = c("student_id" = "StudentID")) %>% 
   relocate(first_z_score, .before = "student_id") %>% unique()
+
+```
+
+### Does *current cumulative college GPA by Ethnicity* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+```
+
+### Does *current cumulative college GPA by Gender* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# First Praxis Z Score vs CurrentCumGPA & isMale
+fpz_ccgpa_gender <- lm(first_z_score ~ CurrentCumGPA + as.factor(isMale) + CurrentCumGPA:as.factor(isMale), data = praxis_first_zscore)
+summary(fpz_ccgpa_gender)
+b <- coef(fpz_ccgpa_gender)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = CurrentCumGPA, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #female line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs First Praxis Z score By Gender", 
+       y = "First Attempt Praxis Z Score", x = "Current Cummulative GPA", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+
+```
+
+### Does *current cumulative college GPA with Pell Grant* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+# First Praxis Z Score vs CurrentCumGPA & isMale
+fpz_ccgpa_pell <- lm(first_z_score ~ CurrentCumGPA + as.factor(ReceivedPell) + CurrentCumGPA:as.factor(ReceivedPell), data = praxis_first_zscore)
+summary(fpz_ccgpa_pell)
+b <- coef(fpz_ccgpa_pell)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = CurrentCumGPA, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #non-pell line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs First Praxis Z score with Pell Grant", 
+       y = "First Attempt Praxis Z Score", x = "Current Cummulative GPA", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+
+```
+
+### Does *current cumulative college GPA with Mission* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs CurrentCumGPA & ServedMission
+fpz_ccgpa_mission <- lm(first_z_score ~ CurrentCumGPA + ServedMission + CurrentCumGPA:ServedMission, data = praxis_first_zscore)
+summary(fpz_ccgpa_mission)
+b <- coef(fpz_ccgpa_mission)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = CurrentCumGPA, color = ServedMission))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-return missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red" )+ #returned missionary line
+  theme_bw()+
+  labs(title = "Current Cummulative GPA vs First Praxis Z score with Returned Missionary", 
+       y = "First Attempt Praxis Z Score", x = "Current Cummulative GPA", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Returned Missionary', 'Non-Returned Missionary'))
+
+```
+
+### Does *self-reported ACT and SAT score* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs ACTSAT_Score
+fpz_act <- lm(first_z_score ~ ACTSAT_Scores, data = praxis_first_zscore)
+summary(fpz_act)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores))+
+  geom_point(alpha = 0.2)+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs First Praxis Z score", 
+       y = "First Attempt Praxis Z Score", x = "ACT & SAT Score")
+
+```
+
+### Does *self-reported ACT and SAT score by enthnicity* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs ACTSAT_Score & Ethnicity
+
+```
+
+### Does *self-reported ACT and SAT score by enthnicity* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs ACTSAT_Score & isMale
+fpz_act_gender <- lm(first_z_score ~ ACTSAT_Scores + as.facotr(isMale) + ACTSAT_Scores:as.factor(isMale), data = praxis_first_zscore)
+summary(fpz_act_gender)
+b <- coef(fpz_act_gender)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs First Praxis Z score by Gender", 
+       y = "First Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+```
+
+### Does *self-reported ACT and SAT score by gender* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs ACTSAT_Score & isMale
+fpz_act_gender <- lm(first_z_score ~ ACTSAT_Scores + as.facotr(isMale) + ACTSAT_Scores:as.factor(isMale), data = praxis_first_zscore)
+summary(fpz_act_gender)
+b <- coef(fpz_act_gender)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs First Praxis Z score by Gender", 
+       y = "First Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+```
+
+
+### Does *self-reported ACT and SAT score with pell grant* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs ACTSAT_Score & ReceivedPell
+fpz_act_pell <- lm(first_z_score ~ ACTSAT_Scores + as.factor(ReceivedPell) + ACTSAT_Scores:as.factor(ReceivedPell), data = praxis_first_zscore)
+summary(fpz_act_pell)
+b <- coef(fpz_act_pell)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #non-pell line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs First Praxis Z score with Pell Grant", 
+       y = "First Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+```
+
+
+### Does *self-reported ACT and SAT score with mission* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs ACTSAT_Score & ServedMission
+fpz_act_mission <- lm(first_z_score ~ ACTSAT_Scores + as.factor(ServedMission) + ACTSAT_Scores:as.factor(ServedMission), data = praxis_first_zscore)
+summary(fpz_act_mission)
+b <- coef(fpz_act_pell)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = ACTSAT_Scores, color = as.factor(ServedMission)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #returned missionary line
+  theme_bw()+
+  labs(title = "Self-Reported ACT & SAT Score vs First Praxis Z score with Mission", 
+       y = "First Attempt Praxis Z Score", x = "ACT & SAT Score", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Rerturned Missionary', 'Non-Returned Missionary'))
+
+```
+
+### Does *self-reported high school GPA* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs HigSchoolGPA
+fpz_high <- lm(first_z_score ~ HighSchoolGPA, data = praxis_first_zscore)
+summary(fpz_high)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = HighSchoolGPA))+
+  geom_point(alpha = 0.2)+
+  geom_smooth(method = "lm", formula = y~x, se = FALSE)+
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs First Praxis Z score", 
+       y = "First Attempt Praxis Z Score", x = "High School GPA")
+
+```
+
+### Does *self-reported high school GPA by ethnicity* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs HigSchoolGPA & Ethnicity
+
+
+```
+
+### Does *self-reported high school GPA by gender* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs HighSchoolGPA & isMale
+fpz_high_gender <- lm(first_z_score ~ HighSchoolGPA + as.facotr(isMale) + HighSchoolGPA:as.factor(isMale), data = praxis_first_zscore)
+summary(fpz_high_gender)
+b <- coef(fpz_high_gender)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = HighSchoolGPA, color = as.factor(isMale)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #male line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #female line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs First Praxis Z score by Gender", 
+       y = "First Attempt Praxis Z Score", x = "High School GPA", color = 'Gender')+
+  scale_color_manual(name="Gender", values=c("red","blue"), labels = c('Female', 'Male'))
+
+
+```
+
+### Does *self-reported high school GPA with pell grant* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs HighSchoolGPA & ReceivedPell
+fpz_high_pell <- lm(first_z_score ~ HighSchoolGPA + as.factor(ReceivedPell) + HighSchoolGPA:as.factor(ReceivedPell), data = praxis_first_zscore)
+summary(fpz_high_pell)
+b <- coef(fpz_high_pell)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = HighSchoolGPA, color = as.factor(ReceivedPell)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #pell line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #non-pell line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs First Praxis Z score with Pell Grant", 
+       y = "First Attempt Praxis Z Score", x = "High School GPA", color = 'Pell Grant')+
+  scale_color_manual(name="Pell Grant", values=c("red","blue"), labels = c('Non-Pell Grant Receiver', 'Pell Grant Receiver'))
+
+
+```
+
+### Does *self-reported high school GPA with mission* predict a student's first attempt praxis performance or not? 
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+# First Praxis Z Score vs HighSchoolGPA & ServedMission
+fpz_high_mission <- lm(first_z_score ~ HighSchoolGPA + as.factor(ServedMission) + HighSchoolGPA:as.factor(ServedMission), data = praxis_first_zscore)
+summary(fpz_high_mission)
+b <- coef(fpz_high_pell)
+ggplot(praxis_first_zscore, aes(y = first_z_score, x = HighSchoolGPA, color = as.factor(ServedMission)))+
+  geom_point(alpha = 0.2)+
+  stat_function(fun = function(x) b[1] + b[2]*x, color = "blue")+ #non-returned missionary line
+  stat_function(fun = function(x) (b[1]+b[3]) + (b[2]+b[4])*x, color = "red")+ #returned missionary line
+  theme_bw()+
+  labs(title = "Self-Reported High School GPA vs First Praxis Z score with Mission", 
+       y = "First Attempt Praxis Z Score", x = "High School GPA", color = 'Mission')+
+  scale_color_manual(name="Mission", values=c("red","blue"), labels = c('Rerturned Missionary', 'Non-Returned Missionary'))
+
 
 ```
 
