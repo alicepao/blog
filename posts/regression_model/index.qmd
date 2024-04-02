@@ -123,7 +123,7 @@ summary(pre_praxis_last_zscore)
 
 #### Ktichen Sink Model: Last Cutoff
 
-```{r, message = FALSE, warning = FLASE}
+```{r, message = FALSE, warning = FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
