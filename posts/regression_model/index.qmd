@@ -12,19 +12,15 @@ The two research questions we are trying to answer are:
 1. What predicts strong teaching? 
 2. How do measures of success correlate with each other? 
 
-In the attempt to answer these two questions, I run logistic and multiple linear regression models using the praxis data set I got. (for its data cleaning and transformation process, please refer to my [other blog post]())
+In this blog, I'll focus on running statistical analyses to answer the first question. I run logistic and multiple linear regression models using the praxis data set I got. (for its data cleaning and transformation process, please refer to my [other blog post]())
 
 ## What Predicts Strong Teaching? 
 
 For the following regression models, the target(y) will be different results for praxis scores and the features(x) will be different student demographics. 
 
-* Regression 1: Target is if a student ever pass praxis test. 0 means fail and 1 means pass. 
+#### Kitchen Sink Model: Ever Pass
 
-In total, we have 4695 student subjects. 401 students never passed their praxis tests while 4228 students eventually passed praxis. We have 66 students didn't indicate whether they passed praxis or not. In all the models I ran, these NAs were omitted. 
-
-### Does *current cumulative college GPA* predict if a student eventually passes praxis test or not? 
-For this model, I set *alpha* to be 0.05; the following is the result of the model. We see that the p-value for Current Cumulative GPA variable is smaller than 0.05. Therefore, we can make an inference that current cumulative GPA is somewhat useful when it comes to predicting if a student can pass praxis test or not. However, since the AIC score for this model is 2628, it means that this model isn't the most accurate.
-```{r, message = FALSE, warning=FALSE}
+```{r, warning = FALSE, message = FALSE}
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
@@ -32,10 +28,104 @@ library(tidyverse)
 library(arrow)
 library(ResourceSelection)
 library(ggpubr)
+library(pander)
 
 praxis <- read.csv("/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/final_praxis.csv", header = TRUE, stringsAsFactors = TRUE)
 demo <- read_parquet("/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/All_teacher_info.parquet")
+
+praxis <- praxis %>%   mutate(Ethnicity = case_when(Ethnicity == "White" ~ "White", 
+                               TRUE ~ "Not White"))
+
+
+praxis_ever_pass <- praxis %>% 
+  select(student_id, ever_pass) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_ever_pass <- inner_join(praxis_ever_pass, demo, by = c("student_id" = "StudentID"))
+praxis_ever_pass <- praxis_ever_pass %>% relocate(ever_pass, .before = "student_id") %>% unique()
+
+all_everpass <- glm(ever_pass ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+                    HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+                      asMajor*firstSemGPAinTeaching*finalMinor*gradType, data = praxis_ever_pass, family = binomial)
+summary(all_everpass)
+
+demo_ever_pass <- glm(ever_pass ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_ever_pass, family = binomial)
+
+pre_ever_pass <- glm(ever_pass ~ ACTSAT_Scores*HighSchoolGPA, data = praxis_ever_pass, family = binomial)
+
 ```
+
+
+#### Kitchen Sink Model: First ZScore
+
+```{r, warning = FALSE, message = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+praxis_first_zscore <- praxis %>% 
+  select(student_id, first_z_score) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_first_zscore <- inner_join(praxis_first_zscore, demo, by = c("student_id" = "StudentID")) %>% 
+  relocate(first_z_score, .before = "student_id") %>% unique()
+
+all_praxis_first_zscore <- lm(first_z_score ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+                                HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+                                asMajor*firstSemGPAinTeaching, data = praxis_first_zscore)
+
+summary(all_praxis_first_zscore)
+
+```
+
+#### Kitchen Sink Model: Last ZScore
+
+```{r, message = FALSE, warning = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+praxis_last_zscore <- praxis %>% 
+  select(student_id, last_z_score) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_last_zscore <- inner_join(praxis_last_zscore, demo, by = c("student_id" = "StudentID")) %>% 
+  relocate(last_z_score, .before = "student_id") %>% unique()
+
+all_praxis_first_zscore <- lm(last_z_score ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+                                HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+                                asMajor*firstSemGPAinTeaching, data = praxis_last_zscore)
+
+summary(all_praxis_first_zscore)
+ 
+```
+
+#### Ktichen Sink Model: Last Cutoff
+
+```{r, message = FALSE, warning = FLASE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+praxis_last_cutoff <- praxis %>% 
+  select(student_id, last_score_cutoff) %>% 
+  mutate(student_id = as.character(student_id))
+
+praxis_last_cutoff <- inner_join(praxis_last_cutoff, demo, by = c("student_id" = "StudentID")) %>% 
+  relocate(last_score_cutoff, .before = "student_id") %>% unique()
+
+all_last_cutoff <- lm(last_score_cutoff ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+                                HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+                                asMajor*firstSemGPAinTeaching, data = praxis_last_cutoff)
+summary(all_last_cutoff)
+```
+
+
+* Regression 1: Target is if a student ever pass praxis test. 0 means fail and 1 means pass. 
+
+In total, we have 4695 student subjects. 401 students never passed their praxis tests while 4228 students eventually passed praxis. We have 66 students didn't indicate whether they passed praxis or not. In all the models I ran, these NAs were omitted. 
+
+### Does `*current cumulative college GPA*` predict if a student eventually passes praxis test or not? 
+For this model, I set *alpha* to be 0.05; the following is the result of the model. We see that the p-value for Current Cumulative GPA variable is smaller than 0.05. Therefore, we can make an inference that current cumulative GPA is somewhat useful when it comes to predicting if a student can pass praxis test or not. However, since the AIC score for this model is 2628, it means that this model isn't the most accurate.
+
 
 ```{r, message = FALSE, warning=FALSE}
 #| echo: true
@@ -44,12 +134,6 @@ demo <- read_parquet("/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/
 
 # 1: Logistic Regression Model 
 # Logistic Regression Model: Ever Pass vs CurrentCumGPA
-praxis_ever_pass <- praxis %>% 
-  select(student_id, ever_pass) %>% 
-  mutate(student_id = as.character(student_id))
-
-praxis_ever_pass <- inner_join(praxis_ever_pass, demo, by = c("student_id" = "StudentID"))
-praxis_ever_pass <- praxis_ever_pass %>% relocate(ever_pass, .before = "student_id") %>% unique()
 
 ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
   geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
@@ -97,7 +181,8 @@ ggplot(data = ever_pass_ethnicity, aes(x=CurrentCumGPA, y = ever_pass))+
   theme_bw()+
   labs(title = "Current Cumulative GPA vs Final Praxis Pass by Student's Ethnicity", 
                    subtitle = "0 means the student never pass, 1 means the student passes", 
-                   y = "Ever Pass or not", x = "Current Cumulative GPA" )
+                   y = "Ever Pass or not", x = "Current Cumulative GPA" )+
+   geom_hline(yintercept =1, linetype = "dashed", color = "red")
 ```
 
 ### Does *current cumulative college GPA by gender* predict if a student eventually passes praxis test or not? 
@@ -108,8 +193,22 @@ This model analyzes if the cumulative college gpa and gender can predict passing
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
+
+library(Hmisc)
+praxis_ever_pass%>%select(CurrentCumGPA, isMale, ever_pass)%>%describe()
+```
+
+
+Here's a table showing the model's result: 
+
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
 # Logistic Regression Model: Ever Pass vs CurrentCumGPA & isMale
 glm_ever_pass_male <- glm(ever_pass ~ CurrentCumGPA*isMale, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_male) %>% pander()
 ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
   geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
   stat_smooth(method='glm', method.args = list(family = "binomial"),
@@ -145,6 +244,16 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
 
 
 ### Does *current cumulative college GPA with mission* predict if a student eventually passes praxis test or not? 
+
+
+```{r, message = FALSE, warning=FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+praxis_ever_pass%>%select(CurrentCumGPA, ServedMission, ever_pass)%>%describe()
+```
+
 
 ```{r, message = FALSE, warning = FALSE}
 #| echo: true
@@ -932,13 +1041,6 @@ praxis_last_cutoff <- inner_join(praxis_last_cutoff, demo, by = c("student_id" =
 #| echo: true
 #| code-fold: true
 #| #| code-summary: "expand for full code"
-praxis_last_zscore <- praxis %>% 
-  select(student_id, last_z_score) %>% 
-  mutate(student_id = as.character(student_id))
-
-praxis_last_zscore <- inner_join(praxis_last_zscore, demo, by = c("student_id" = "StudentID")) %>% 
-  relocate(last_z_score, .before = "student_id") %>% unique()
-
 # Last Attempt Score Points from State Passing Standard vs CurrentCumGPA
 lc_ccgpa <- lm(last_score_cutoff ~ CurrentCumGPA, data = praxis_last_cutoff)
 summary(lc_ccgpa)
