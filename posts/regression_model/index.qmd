@@ -313,6 +313,7 @@ ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
 #| #| code-summary: "expand for full code"
 # Logistic Regression Model: Ever Pass vs ACTSAT_Scores
 glm_ever_pass_ACTSAT <- glm(ever_pass ~ ACTSAT_Scores, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_ACTSAT)%>% pander()
 ggplot(data = praxis_ever_pass, aes(x=ACTSAT_Scores, y = ever_pass))+
   geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
   geom_smooth(method = "glm", method.args=list(family=binomial), se=FALSE)+
