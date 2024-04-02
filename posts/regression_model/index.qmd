@@ -61,8 +61,8 @@ pre_ever_pass <- glm(ever_pass ~ ACTSAT_Scores*HighSchoolGPA, data = praxis_ever
 #| code-fold: true
 #| #| code-summary: "expand for full code"
 
-summary(demo_ever_pass)
-summary(pre_ever_pass)
+summary(demo_ever_pass)%>% pander()
+summary(pre_ever_pass)%>% pander()
 
 ```
 
@@ -86,10 +86,10 @@ praxis_first_zscore <- inner_join(praxis_first_zscore, demo, by = c("student_id"
 # summary(all_praxis_first_zscore)
 
 demo_praxis_first_zscore <- lm(first_z_score ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_first_zscore)
-summary(demo_praxis_first_zscore)
+summary(demo_praxis_first_zscore)%>% pander()
 
 pre_praxis_first_zscore <- lm(first_z_score ~ ACTSAT_Scores*HighSchoolGPA, data = praxis_first_zscore)
-summary(pre_praxis_first_zscore)
+summary(pre_praxis_first_zscore)%>% pander()
 
 ```
 
@@ -114,10 +114,10 @@ praxis_last_zscore <- inner_join(praxis_last_zscore, demo, by = c("student_id" =
 # summary(all_praxis_last_zscore)
 
 demo_praxis_last_zscore <- lm(last_z_score ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_last_zscore)
-summary(demo_praxis_last_zscore)
+summary(demo_praxis_last_zscore)%>% pander()
 
 pre_praxis_last_zscore <- lm(last_z_score ~ ACTSAT_Scores*HighSchoolGPA, data = praxis_last_zscore)
-summary(pre_praxis_last_zscore)
+summary(pre_praxis_last_zscore)%>% pander()
  
 ```
 
@@ -140,10 +140,10 @@ praxis_last_cutoff <- inner_join(praxis_last_cutoff, demo, by = c("student_id" =
 # summary(all_last_cutoff)
 
 demo_praxis_last_cutoff <- lm(last_score_cutoff ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_last_cutoff)
-summary(demo_praxis_last_zscore)
+summary(demo_praxis_last_zscore)%>% pander()
 
 pre_praxis_last_cutoff <- lm(last_score_cutoff~ ACTSAT_Scores*HighSchoolGPA, data = praxis_last_cutoff)
-summary(pre_praxis_last_cutoff)
+summary(pre_praxis_last_cutoff)%>% pander()
 
 ```
 
@@ -163,7 +163,8 @@ For this model, I set *alpha* to be 0.05; the following is the result of the mod
 
 # 1: Logistic Regression Model 
 # Logistic Regression Model: Ever Pass vs CurrentCumGPA
-
+glm_ever_pass_gpa <- glm(ever_pass ~ CurrentCumGPA, data = praxis_ever_pass, family = binomial)
+summary(glm_ever_pass_gpa) %>% pander()
 ggplot(data = praxis_ever_pass, aes(x=CurrentCumGPA, y = ever_pass))+
   geom_jitter(alpha = 0.2, width = 0.5, height = 0.1)+
   stat_smooth(method='glm', method.args = list(family = "binomial"),
