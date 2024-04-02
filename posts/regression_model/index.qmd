@@ -33,7 +33,7 @@ library(pander)
 praxis <- read.csv("/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/final_praxis.csv", header = TRUE, stringsAsFactors = TRUE)
 demo <- read_parquet("/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/All_teacher_info.parquet")
 
-praxis <- praxis %>%   mutate(Ethnicity = case_when(Ethnicity == "White" ~ "White", 
+demo <- demo %>%  mutate(Ethnicity = case_when(Ethnicity == "White" ~ "White", 
                                TRUE ~ "Not White"))
 
 
@@ -44,10 +44,10 @@ praxis_ever_pass <- praxis %>%
 praxis_ever_pass <- inner_join(praxis_ever_pass, demo, by = c("student_id" = "StudentID"))
 praxis_ever_pass <- praxis_ever_pass %>% relocate(ever_pass, .before = "student_id") %>% unique()
 
-all_everpass <- glm(ever_pass ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
-                    HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
-                      asMajor*firstSemGPAinTeaching*finalMinor*gradType, data = praxis_ever_pass, family = binomial)
-summary(all_everpass)
+# all_ever_pass <- glm(ever_pass ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+#                     HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+#                       asMajor*firstSemGPAinTeaching*finalMinor*gradType, data = praxis_ever_pass, family = binomial)
+# summary(all_ever_pass)
 
 demo_ever_pass <- glm(ever_pass ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_ever_pass, family = binomial)
 
@@ -55,6 +55,16 @@ pre_ever_pass <- glm(ever_pass ~ ACTSAT_Scores*HighSchoolGPA, data = praxis_ever
 
 ```
 
+
+```{r, warning = FALSE, message = FALSE}
+#| echo: true
+#| code-fold: true
+#| #| code-summary: "expand for full code"
+
+summary(demo_ever_pass)
+summary(pre_ever_pass)
+
+```
 
 #### Kitchen Sink Model: First ZScore
 
@@ -69,11 +79,17 @@ praxis_first_zscore <- praxis %>%
 praxis_first_zscore <- inner_join(praxis_first_zscore, demo, by = c("student_id" = "StudentID")) %>% 
   relocate(first_z_score, .before = "student_id") %>% unique()
 
-all_praxis_first_zscore <- lm(first_z_score ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
-                                HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
-                                asMajor*firstSemGPAinTeaching, data = praxis_first_zscore)
+# all_praxis_first_zscore <- lm(first_z_score ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+#                                 HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+#                                 asMajor*firstSemGPAinTeaching*finalMinor*gradType, data = praxis_first_zscore)
 
-summary(all_praxis_first_zscore)
+# summary(all_praxis_first_zscore)
+
+demo_praxis_first_zscore <- lm(first_z_score ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_first_zscore)
+summary(demo_praxis_first_zscore)
+
+pre_praxis_first_zscore <- lm(first_z_score ~ ACTSAT_Scores*HighSchoolGPA, data = praxis_first_zscore)
+summary(pre_praxis_first_zscore)
 
 ```
 
@@ -91,11 +107,17 @@ praxis_last_zscore <- praxis %>%
 praxis_last_zscore <- inner_join(praxis_last_zscore, demo, by = c("student_id" = "StudentID")) %>% 
   relocate(last_z_score, .before = "student_id") %>% unique()
 
-all_praxis_first_zscore <- lm(last_z_score ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
-                                HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
-                                asMajor*firstSemGPAinTeaching, data = praxis_last_zscore)
+# all_praxis_last_zscore <- lm(last_z_score ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+#                                 HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+#                                 asMajor*firstSemGPAinTeaching*finalMinor*gradType, data = praxis_last_zscore)
 
-summary(all_praxis_first_zscore)
+# summary(all_praxis_last_zscore)
+
+demo_praxis_last_zscore <- lm(last_z_score ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_last_zscore)
+summary(demo_praxis_last_zscore)
+
+pre_praxis_last_zscore <- lm(last_z_score ~ ACTSAT_Scores*HighSchoolGPA, data = praxis_last_zscore)
+summary(pre_praxis_last_zscore)
  
 ```
 
@@ -112,10 +134,17 @@ praxis_last_cutoff <- praxis %>%
 praxis_last_cutoff <- inner_join(praxis_last_cutoff, demo, by = c("student_id" = "StudentID")) %>% 
   relocate(last_score_cutoff, .before = "student_id") %>% unique()
 
-all_last_cutoff <- lm(last_score_cutoff ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
-                                HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
-                                asMajor*firstSemGPAinTeaching, data = praxis_last_cutoff)
-summary(all_last_cutoff)
+# all_last_cutoff <- lm(last_score_cutoff ~ ServedMission*Ethnicity*isMale*CurrentCumGPA*ACTSAT_Scores*
+#                                 HighSchoolGPA*ReceivedPell*FirstSemAge*FirstSemMaritalStatus*
+#                                 asMajor*firstSemGPAinTeaching*finalMinor*gradType, data = praxis_last_cutoff)
+# summary(all_last_cutoff)
+
+demo_praxis_last_cutoff <- lm(last_score_cutoff ~ ServedMission*Ethnicity*isMale*ReceivedPell*FirstSemAge*FirstSemMaritalStatus, data = praxis_last_cutoff)
+summary(demo_praxis_last_zscore)
+
+pre_praxis_last_cutoff <- lm(last_score_cutoff~ ACTSAT_Scores*HighSchoolGPA, data = praxis_last_cutoff)
+summary(pre_praxis_last_cutoff)
+
 ```
 
 
