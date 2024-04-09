@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Alice Pao">
+<meta name="dcterms.date" content="2024-03-06">
+
+<title>Alice in Dataland - Logistic &amp; Multiple Linear Regression Model for Praxis Scores</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Alice in Dataland</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About Me</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/alice-pao/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Logistic &amp; Multiple Linear Regression Model for Praxis Scores</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">portfolio</div>
+                <div class="quarto-category">r</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Alice Pao </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 6, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p>This post is to showcase my statistical analyses for praxis scores collected from students majoring in teacher education at an Idaho higher education institution. This project is part of <a href="https://sites.google.com/view/benjamin-pacini/dissertation/methodology">Benjamin Pacini’s dissertation</a>.</p>
+<p>The two research questions we are trying to answer are: 1. What predicts strong teaching? 2. How do measures of success correlate with each other?</p>
+<p>In the attempt to answer these two questions, I run logistic and multiple linear regression models using the praxis data set I got. (for its data cleaning and transformation process, please refer to my <a href="">other blog post</a>)</p>
+<section id="what-predicts-strong-teaching" class="level2">
+<h2 class="anchored" data-anchor-id="what-predicts-strong-teaching">What Predicts Strong Teaching?</h2>
+<p>For the following regression models, the target(y) will be different results for praxis scores and the features(x) will be different student demographics.</p>
+<ul>
+<li>Regression 1: Target is if a student ever pass praxis test. 0 means fail and 1 means pass.</li>
+</ul>
+<p>In total, we have 4695 student subjects. 401 students never passed their praxis tests while 4228 students eventually passed praxis. We have 66 students didn’t indicate whether they passed praxis or not. In all the models I ran, these NAs were omitted.</p>
+<section id="does-current-cumulative-college-gpa-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>current cumulative college GPA</em> predict if a student eventually passes praxis test or not?</h3>
+<p>For this model, I set <em>alpha</em> to be 0.05; the following is the result of the model. We see that the p-value for Current Cumulative GPA variable is smaller than 0.05. Therefore, we can make an inference that current cumulative GPA is somewhat useful when it comes to predicting if a student can pass praxis test or not. However, since the AIC score for this model is 2628, it means that this model isn’t the most accurate.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ResourceSelection)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>praxis <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/final_praxis.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>demo <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"/Users/alice/Library/Mobile Documents/com~apple~CloudDocs/Portfolio/Data Science Blog/blog/posts/regression_model/All_teacher_info.parquet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1: Logistic Regression Model </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>praxis_ever_pass <span class="ot">&lt;-</span> praxis <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(student_id, ever_pass) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">student_id =</span> <span class="fu">as.character</span>(student_id))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>praxis_ever_pass <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(praxis_ever_pass, demo, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"student_id"</span> <span class="ot">=</span> <span class="st">"StudentID"</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>praxis_ever_pass <span class="ot">&lt;-</span> praxis_ever_pass <span class="sc">%&gt;%</span> <span class="fu">relocate</span>(ever_pass, <span class="at">.before =</span> <span class="st">"student_id"</span>) <span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x) <span class="sc">+</span> </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass"</span>, </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>)<span class="sc">+</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>current cumulative college GPA by ethnicity</em> predict if a student eventually passes praxis test or not?</h3>
+<p>For this model, I added ethnicity to be another feature becuase I am curious if ethnicity can contribute to the prediction. The original data has 9 different ethinicity groups; however, for the sake of simplicity, some of them are grouped together.</p>
+<p>Here are the final ethnicity groups: * American Indian/Alaskan &amp; Hawaiian, Pacific Islander * Black * Hispanic * Two or more ethnicities * Other &amp; unknown * White</p>
+<p>From the table below, none of the variables p-value are smaller than 0.05. The AIC score is 2631.8 which is too high (the lower the AIC score, the more fitted a model is)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; Ethnicity</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ever_pass_ethnicity <span class="ot">&lt;-</span> praxis_ever_pass <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">mutate</span>(<span class="at">Ethnicity =</span> <span class="fu">case_when</span>(Ethnicity <span class="sc">==</span> <span class="st">"American Indian/Alaskan"</span> <span class="sc">|</span> Ethnicity <span class="sc">==</span> <span class="st">"Hawaiian, Pacific Island"</span> <span class="sc">~</span> <span class="st">"American Indian/Alaskan &amp; Hawaiian, Pacific Islander"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                                                     Ethnicity <span class="sc">==</span> <span class="st">"Black"</span> <span class="sc">~</span> <span class="st">"Black"</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                                                     Ethnicity <span class="sc">==</span> <span class="st">"Hispanic, Latino"</span> <span class="sc">~</span> <span class="st">"Hispanic"</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                                                     Ethnicity <span class="sc">==</span> <span class="st">"Two or More Ethnicities"</span> <span class="sc">~</span> <span class="st">"Two or More Ethnicities"</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                                                     Ethnicity <span class="sc">==</span> <span class="st">"Asian"</span> <span class="sc">~</span> <span class="st">"Asian"</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                                                     Ethnicity <span class="sc">==</span> <span class="st">"Other"</span> <span class="sc">|</span> Ethnicity <span class="sc">==</span> <span class="st">"Unknown"</span> <span class="sc">~</span> <span class="st">"Other &amp; Unknown"</span>, </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                                                     Ethnicity <span class="sc">==</span> <span class="st">"White"</span> <span class="sc">~</span> <span class="st">"White"</span>, </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                                                     <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"BLANK"</span>))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>Ethnicity, <span class="at">data =</span> ever_pass_ethnicity, <span class="at">family =</span> binomial)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_ever_pass_ethnicity)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = ever_pass ~ CurrentCumGPA * Ethnicity, family = binomial, 
+    data = ever_pass_ethnicity)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.5459   0.3000   0.3586   0.4535   1.2466  
+
+Coefficients:
+                                                Estimate Std. Error z value
+(Intercept)                                     1.608195   4.503959   0.357
+CurrentCumGPA                                   0.185392   1.316549   0.141
+EthnicityAsian                                 -5.380693   5.210638  -1.033
+EthnicityBlack                                 -0.536566   6.189418  -0.087
+EthnicityHispanic                              -2.220342   4.643464  -0.478
+EthnicityOther &amp; Unknown                       -6.103617   5.275097  -1.157
+EthnicityTwo or More Ethnicities               -2.926444   5.075393  -0.577
+EthnicityWhite                                 -3.297413   4.524356  -0.729
+CurrentCumGPA:EthnicityAsian                    1.408071   1.523489   0.924
+CurrentCumGPA:EthnicityBlack                    0.006919   1.838659   0.004
+CurrentCumGPA:EthnicityHispanic                 0.524915   1.361616   0.386
+CurrentCumGPA:EthnicityOther &amp; Unknown          1.699049   1.551103   1.095
+CurrentCumGPA:EthnicityTwo or More Ethnicities  0.814789   1.505475   0.541
+CurrentCumGPA:EthnicityWhite                    1.037126   1.322846   0.784
+                                               Pr(&gt;|z|)
+(Intercept)                                       0.721
+CurrentCumGPA                                     0.888
+EthnicityAsian                                    0.302
+EthnicityBlack                                    0.931
+EthnicityHispanic                                 0.633
+EthnicityOther &amp; Unknown                          0.247
+EthnicityTwo or More Ethnicities                  0.564
+EthnicityWhite                                    0.466
+CurrentCumGPA:EthnicityAsian                      0.355
+CurrentCumGPA:EthnicityBlack                      0.997
+CurrentCumGPA:EthnicityHispanic                   0.700
+CurrentCumGPA:EthnicityOther &amp; Unknown            0.273
+CurrentCumGPA:EthnicityTwo or More Ethnicities    0.588
+CurrentCumGPA:EthnicityWhite                      0.433
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2728.0  on 4628  degrees of freedom
+Residual deviance: 2603.8  on 4615  degrees of freedom
+  (66 observations deleted due to missingness)
+AIC: 2631.8
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> ever_pass_ethnicity, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> Ethnicity)) <span class="sc">+</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass by Student's Ethnicity"</span>, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-by-gender-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-by-gender-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>current cumulative college GPA by gender</em> predict if a student eventually passes praxis test or not?</h3>
+<p>This model analyzes if the cumulative college gpa and gender can predict passing praxis test. From the graph, there isn’t any strong indication that gender contribute to this prediction.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; isMale</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(isMale))) <span class="sc">+</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass by Gender"</span>, </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Gender"</span>)<span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                      <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>))<span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-with-pell-grant-receiver-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-with-pell-grant-receiver-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>current cumulative college GPA with pell grant receiver</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; ReceivedPell</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell))) <span class="sc">+</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass for Pell Grant Receipients"</span>, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Pell Grant Receiver or not"</span>)<span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))<span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-with-returned-missionary-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-with-returned-missionary-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>current cumulative college GPA with returned missionary</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; ServedMission</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ServedMission))) <span class="sc">+</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass by Gender"</span>, </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Mission"</span>)<span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"FALSE"</span>, <span class="st">"TRUE"</span>),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Non-returned Missionary"</span>, <span class="st">"Returned Missionary"</span>))<span class="sc">+</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 66 rows containing non-finite values (`stat_smooth()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 66 rows containing missing values (`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-sat-score-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-sat-score-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported ACT &amp; SAT score</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass"</span>, </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never passes, 1 means the student passes"</span>, </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-sat-score-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-sat-score-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported ACT &amp; SAT score by Ethnicity</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; Ethnicity</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_ethnicity <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>Ethnicity, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> Ethnicity))<span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass by Ethnicity"</span>, </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never passes, 1 means the student passes"</span>, </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Ethnicity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-sat-score-by-gender-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-sat-score-by-gender-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported ACT &amp; SAT score by gender</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; isMale</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_ACTSAT_male <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> ACTSAT_Scores<span class="sc">*</span>isMale, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass by Gender"</span>, </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never passes, 1 means the student passes"</span>, </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Gender"</span>)<span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-sat-score-with-returned-missionary-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-sat-score-with-returned-missionary-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported ACT &amp; SAT score with returned missionary</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs ACTSAT_Scores &amp; ServedMission</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>ACTSAT_Scores, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ServedMission))) <span class="sc">+</span> </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass With Students Serving or Not Serving Mission"</span>, </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"ACT or SAT Score"</span>, <span class="at">color =</span> <span class="st">"Mission"</span>)<span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"FALSE"</span>, <span class="st">"TRUE"</span>), </span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Non-returned Missionary"</span>, <span class="st">"Returned Missionary"</span>))<span class="sc">+</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-sat-score-with-pell-grant-receiver-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-sat-score-with-pell-grant-receiver-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported ACT &amp; SAT score with pell grant receiver</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs CurrentCumGPA &amp; ReceivedPell</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>glm_ever_pass_pell <span class="ot">&lt;-</span> <span class="fu">glm</span>(ever_pass <span class="sc">~</span> CurrentCumGPA<span class="sc">*</span>ReceivedPell, <span class="at">data =</span> praxis_ever_pass, <span class="at">family =</span> binomial)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>CurrentCumGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span>binomial), <span class="at">se=</span><span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cumulative GPA vs Final Praxis Pass for Pell Grant Receivers"</span>, </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never passes, 1 means the student passes"</span>, </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"Current Cumulative GPA"</span>, <span class="at">color =</span> <span class="st">"Pell Grant Receiver or not"</span>)<span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported high school GPA</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs HighSchoolGPA </span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>HighSchoolGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x) <span class="sc">+</span> </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported High School GPA vs Final Praxis Pass"</span>, </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>)<span class="sc">+</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-by-ethnicity-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported high school GPA by ethnicity</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs HighSchoolGPA </span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>HighSchoolGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(Ethnicity))) <span class="sc">+</span> </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT and SAT Score vs Final Praxis Pass for Pell Grant Receipients"</span>, </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>, <span class="at">color =</span> <span class="st">"Pell Grant Receiver or not"</span>)<span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), </span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))<span class="sc">+</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-by-gender-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-by-gender-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported high school GPA by gender</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs HighSchoolGPA &amp; isMale</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>HighSchoolGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(isMale))) <span class="sc">+</span> </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported High School GPA vs Final Praxis Pass by Gender"</span>, </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>, <span class="at">color =</span> <span class="st">"Gender"</span>)<span class="sc">+</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>),</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Female"</span>, <span class="st">"Male"</span>))<span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-with-returned-missionary-predict-if-a-student-eventually-passes-praxis-test-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-with-returned-missionary-predict-if-a-student-eventually-passes-praxis-test-or-not">Does <em>self-reported high school GPA with returned missionary</em> predict if a student eventually passes praxis test or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic Regression Model: Ever Pass vs HighSchoolGPA &amp; ServedMission</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> praxis_ever_pass, <span class="fu">aes</span>(<span class="at">x=</span>HighSchoolGPA, <span class="at">y =</span> ever_pass))<span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">width =</span> <span class="fl">0.5</span>, <span class="at">height =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">'glm'</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="st">"binomial"</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="fu">aes</span>(<span class="at">color =</span> <span class="fu">as.factor</span>(ServedMission))) <span class="sc">+</span> </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported High School GPA vs Final Praxis Pass with Returned Missionary"</span>, </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"0 means the student never pass, 1 means the student passes"</span>, </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Ever Pass or not"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>, <span class="at">color =</span> <span class="st">"Mission"</span>)<span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"FALSE"</span>, <span class="st">"TRUE"</span>),</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Non-returned Missionary"</span>, <span class="st">"Returned Missionary"</span>))<span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span><span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Regression 2: Target is a student’s first attempt praxis z score</li>
+</ul>
+</section>
+<section id="does-current-cumulative-college-gpa-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>current cumulative college GPA</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>praxis_first_zscore <span class="ot">&lt;-</span> praxis <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(student_id, first_z_score) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">student_id =</span> <span class="fu">as.character</span>(student_id))</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>praxis_first_zscore <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(praxis_first_zscore, demo, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"student_id"</span> <span class="ot">=</span> <span class="st">"StudentID"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(first_z_score, <span class="at">.before =</span> <span class="st">"student_id"</span>) <span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-by-ethnicity-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-by-ethnicity-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>current cumulative college GPA by Ethnicity</em> predict a student’s first attempt praxis performance or not?</h3>
+</section>
+<section id="does-current-cumulative-college-gpa-by-gender-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-by-gender-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>current cumulative college GPA by Gender</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs CurrentCumGPA &amp; isMale</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>fpz_ccgpa_gender <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> CurrentCumGPA <span class="sc">+</span> <span class="fu">as.factor</span>(isMale) <span class="sc">+</span> CurrentCumGPA<span class="sc">:</span><span class="fu">as.factor</span>(isMale), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_ccgpa_gender)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ CurrentCumGPA + as.factor(isMale) + 
+    CurrentCumGPA:as.factor(isMale), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.1712 -0.5847  0.0738  0.6738  3.2607 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                      -2.98158    0.08038 -37.093  &lt; 2e-16 ***
+CurrentCumGPA                     0.84264    0.02267  37.166  &lt; 2e-16 ***
+as.factor(isMale)1                0.94587    0.20596   4.592 4.42e-06 ***
+CurrentCumGPA:as.factor(isMale)1 -0.20367    0.06098  -3.340 0.000841 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9426 on 13282 degrees of freedom
+  (13 observations deleted due to missingness)
+Multiple R-squared:  0.1028,    Adjusted R-squared:  0.1026 
+F-statistic: 507.5 on 3 and 13282 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_ccgpa_gender)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> CurrentCumGPA, <span class="at">color =</span> <span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#male line</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span> )<span class="sc">+</span> <span class="co">#female line</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cummulative GPA vs First Praxis Z score By Gender"</span>, </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"Current Cummulative GPA"</span>, <span class="at">color =</span> <span class="st">'Gender'</span>)<span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Gender"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Female'</span>, <span class="st">'Male'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-with-pell-grant-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-with-pell-grant-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>current cumulative college GPA with Pell Grant</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs CurrentCumGPA &amp; isMale</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>fpz_ccgpa_pell <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> CurrentCumGPA <span class="sc">+</span> <span class="fu">as.factor</span>(ReceivedPell) <span class="sc">+</span> CurrentCumGPA<span class="sc">:</span><span class="fu">as.factor</span>(ReceivedPell), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_ccgpa_pell)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ CurrentCumGPA + as.factor(ReceivedPell) + 
+    CurrentCumGPA:as.factor(ReceivedPell), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.8649 -0.5917  0.0704  0.6794  3.1421 
+
+Coefficients:
+                                       Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                            -2.84842    0.10901 -26.130   &lt;2e-16 ***
+CurrentCumGPA                           0.80779    0.03075  26.272   &lt;2e-16 ***
+as.factor(ReceivedPell)1                0.19326    0.14775   1.308    0.191    
+CurrentCumGPA:as.factor(ReceivedPell)1 -0.04509    0.04190  -1.076    0.282    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9462 on 13282 degrees of freedom
+  (13 observations deleted due to missingness)
+Multiple R-squared:  0.09586,   Adjusted R-squared:  0.09566 
+F-statistic: 469.4 on 3 and 13282 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_ccgpa_pell)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> CurrentCumGPA, <span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#pell line</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span> )<span class="sc">+</span> <span class="co">#non-pell line</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cummulative GPA vs First Praxis Z score with Pell Grant"</span>, </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"Current Cummulative GPA"</span>, <span class="at">color =</span> <span class="st">'Pell Grant'</span>)<span class="sc">+</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Pell Grant"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Non-Pell Grant Receiver'</span>, <span class="st">'Pell Grant Receiver'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-current-cumulative-college-gpa-with-mission-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-current-cumulative-college-gpa-with-mission-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>current cumulative college GPA with Mission</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs CurrentCumGPA &amp; ServedMission</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>fpz_ccgpa_mission <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> CurrentCumGPA <span class="sc">+</span> ServedMission <span class="sc">+</span> CurrentCumGPA<span class="sc">:</span>ServedMission, <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_ccgpa_mission)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ CurrentCumGPA + ServedMission + 
+    CurrentCumGPA:ServedMission, data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.9636 -0.5897  0.0713  0.6802  3.2199 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                     -2.770811   0.096865 -28.605   &lt;2e-16 ***
+CurrentCumGPA                    0.777284   0.027504  28.261   &lt;2e-16 ***
+ServedMissionTRUE                0.093717   0.148407   0.631    0.528    
+CurrentCumGPA:ServedMissionTRUE  0.006287   0.042091   0.149    0.881    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9447 on 13282 degrees of freedom
+  (13 observations deleted due to missingness)
+Multiple R-squared:  0.09874,   Adjusted R-squared:  0.09854 
+F-statistic: 485.1 on 3 and 13282 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_ccgpa_mission)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> CurrentCumGPA, <span class="at">color =</span> ServedMission))<span class="sc">+</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#non-return missionary line</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span> )<span class="sc">+</span> <span class="co">#returned missionary line</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Current Cummulative GPA vs First Praxis Z score with Returned Missionary"</span>, </span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"Current Cummulative GPA"</span>, <span class="at">color =</span> <span class="st">'Mission'</span>)<span class="sc">+</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Mission"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Returned Missionary'</span>, <span class="st">'Non-Returned Missionary'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-and-sat-score-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-and-sat-score-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported ACT and SAT score</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs ACTSAT_Score</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>fpz_act <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> ACTSAT_Scores, <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_act)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ ACTSAT_Scores, data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.0018 -0.5070  0.0451  0.5577  2.8619 
+
+Coefficients:
+               Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   -3.476661   0.049424  -70.34   &lt;2e-16 ***
+ACTSAT_Scores  0.156316   0.002176   71.83   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.806 on 10809 degrees of freedom
+  (2488 observations deleted due to missingness)
+Multiple R-squared:  0.3231,    Adjusted R-squared:  0.323 
+F-statistic:  5159 on 1 and 10809 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> ACTSAT_Scores))<span class="sc">+</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y<span class="sc">~</span>x, <span class="at">se =</span> <span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT &amp; SAT Score vs First Praxis Z score"</span>, </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"ACT &amp; SAT Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-and-sat-score-by-enthnicity-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-and-sat-score-by-enthnicity-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported ACT and SAT score by enthnicity</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs ACTSAT_Score &amp; Ethnicity</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="does-self-reported-act-and-sat-score-by-enthnicity-predict-a-students-first-attempt-praxis-performance-or-not-1" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-and-sat-score-by-enthnicity-predict-a-students-first-attempt-praxis-performance-or-not-1">Does <em>self-reported ACT and SAT score by enthnicity</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs ACTSAT_Score &amp; isMale</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>fpz_act_gender <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> ACTSAT_Scores <span class="sc">+</span> <span class="fu">as.factor</span>(isMale) <span class="sc">+</span> ACTSAT_Scores<span class="sc">:</span><span class="fu">as.factor</span>(isMale), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_act_gender)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ ACTSAT_Scores + as.factor(isMale) + 
+    ACTSAT_Scores:as.factor(isMale), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.3312 -0.5011  0.0526  0.5469  2.9014 
+
+Coefficients:
+                                  Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                      -3.552710   0.052198 -68.062  &lt; 2e-16 ***
+ACTSAT_Scores                     0.158755   0.002295  69.164  &lt; 2e-16 ***
+as.factor(isMale)1                0.611269   0.157715   3.876 0.000107 ***
+ACTSAT_Scores:as.factor(isMale)1 -0.017135   0.007031  -2.437 0.014820 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.803 on 10807 degrees of freedom
+  (2488 observations deleted due to missingness)
+Multiple R-squared:  0.3281,    Adjusted R-squared:  0.3279 
+F-statistic:  1759 on 3 and 10807 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_act_gender)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> ACTSAT_Scores, <span class="at">color =</span> <span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#male line</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span> <span class="co">#female line</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT &amp; SAT Score vs First Praxis Z score by Gender"</span>, </span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"ACT &amp; SAT Score"</span>, <span class="at">color =</span> <span class="st">'Gender'</span>)<span class="sc">+</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Gender"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Female'</span>, <span class="st">'Male'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-and-sat-score-by-gender-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-and-sat-score-by-gender-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported ACT and SAT score by gender</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs ACTSAT_Score &amp; isMale</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>fpz_act_gender <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> ACTSAT_Scores <span class="sc">+</span> <span class="fu">as.factor</span>(isMale) <span class="sc">+</span> ACTSAT_Scores<span class="sc">:</span><span class="fu">as.factor</span>(isMale), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_act_gender)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ ACTSAT_Scores + as.factor(isMale) + 
+    ACTSAT_Scores:as.factor(isMale), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.3312 -0.5011  0.0526  0.5469  2.9014 
+
+Coefficients:
+                                  Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                      -3.552710   0.052198 -68.062  &lt; 2e-16 ***
+ACTSAT_Scores                     0.158755   0.002295  69.164  &lt; 2e-16 ***
+as.factor(isMale)1                0.611269   0.157715   3.876 0.000107 ***
+ACTSAT_Scores:as.factor(isMale)1 -0.017135   0.007031  -2.437 0.014820 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.803 on 10807 degrees of freedom
+  (2488 observations deleted due to missingness)
+Multiple R-squared:  0.3281,    Adjusted R-squared:  0.3279 
+F-statistic:  1759 on 3 and 10807 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_act_gender)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> ACTSAT_Scores, <span class="at">color =</span> <span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#male line</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span> <span class="co">#female line</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT &amp; SAT Score vs First Praxis Z score by Gender"</span>, </span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"ACT &amp; SAT Score"</span>, <span class="at">color =</span> <span class="st">'Gender'</span>)<span class="sc">+</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Gender"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Female'</span>, <span class="st">'Male'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-and-sat-score-with-pell-grant-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-and-sat-score-with-pell-grant-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported ACT and SAT score with pell grant</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs ACTSAT_Score &amp; ReceivedPell</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>fpz_act_pell <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> ACTSAT_Scores <span class="sc">+</span> <span class="fu">as.factor</span>(ReceivedPell) <span class="sc">+</span> ACTSAT_Scores<span class="sc">:</span><span class="fu">as.factor</span>(ReceivedPell), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_act_pell)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ ACTSAT_Scores + as.factor(ReceivedPell) + 
+    ACTSAT_Scores:as.factor(ReceivedPell), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.0139 -0.5054  0.0542  0.5570  2.8541 
+
+Coefficients:
+                                        Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                            -3.404246   0.070125 -48.545   &lt;2e-16
+ACTSAT_Scores                           0.152008   0.003055  49.759   &lt;2e-16
+as.factor(ReceivedPell)1               -0.168462   0.099016  -1.701   0.0889
+ACTSAT_Scores:as.factor(ReceivedPell)1  0.009776   0.004361   2.242   0.0250
+                                          
+(Intercept)                            ***
+ACTSAT_Scores                          ***
+as.factor(ReceivedPell)1               .  
+ACTSAT_Scores:as.factor(ReceivedPell)1 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.8055 on 10807 degrees of freedom
+  (2488 observations deleted due to missingness)
+Multiple R-squared:  0.3241,    Adjusted R-squared:  0.3239 
+F-statistic:  1727 on 3 and 10807 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_act_pell)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> ACTSAT_Scores, <span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#pell line</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span> <span class="co">#non-pell line</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT &amp; SAT Score vs First Praxis Z score with Pell Grant"</span>, </span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"ACT &amp; SAT Score"</span>, <span class="at">color =</span> <span class="st">'Pell Grant'</span>)<span class="sc">+</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Pell Grant"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Non-Pell Grant Receiver'</span>, <span class="st">'Pell Grant Receiver'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-act-and-sat-score-with-mission-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-act-and-sat-score-with-mission-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported ACT and SAT score with mission</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs ACTSAT_Score &amp; ServedMission</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>fpz_act_mission <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> ACTSAT_Scores <span class="sc">+</span> <span class="fu">as.factor</span>(ServedMission) <span class="sc">+</span> ACTSAT_Scores<span class="sc">:</span><span class="fu">as.factor</span>(ServedMission), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_act_mission)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ ACTSAT_Scores + as.factor(ServedMission) + 
+    ACTSAT_Scores:as.factor(ServedMission), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.1337 -0.5052  0.0495  0.5499  2.9427 
+
+Coefficients:
+                                            Estimate Std. Error t value
+(Intercept)                                -3.646186   0.065463 -55.699
+ACTSAT_Scores                               0.162232   0.002901  55.925
+as.factor(ServedMission)TRUE                0.425542   0.099743   4.266
+ACTSAT_Scores:as.factor(ServedMission)TRUE -0.014777   0.004381  -3.373
+                                           Pr(&gt;|t|)    
+(Intercept)                                 &lt; 2e-16 ***
+ACTSAT_Scores                               &lt; 2e-16 ***
+as.factor(ServedMission)TRUE                  2e-05 ***
+ACTSAT_Scores:as.factor(ServedMission)TRUE 0.000747 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.8043 on 10807 degrees of freedom
+  (2488 observations deleted due to missingness)
+Multiple R-squared:  0.326, Adjusted R-squared:  0.3258 
+F-statistic:  1742 on 3 and 10807 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_act_mission)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> ACTSAT_Scores, <span class="at">color =</span> <span class="fu">as.factor</span>(ServedMission)))<span class="sc">+</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#non-returned missionary line</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span> <span class="co">#returned missionary line</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported ACT &amp; SAT Score vs First Praxis Z score with Mission"</span>, </span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"ACT &amp; SAT Score"</span>, <span class="at">color =</span> <span class="st">'Mission'</span>)<span class="sc">+</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Mission"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Rerturned Missionary'</span>, <span class="st">'Non-Returned Missionary'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported high school GPA</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs HigSchoolGPA</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>fpz_high <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> HighSchoolGPA, <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_high)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ HighSchoolGPA, data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.8722 -0.6023  0.0776  0.6876  2.5878 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   -2.44834    0.08199  -29.86   &lt;2e-16 ***
+HighSchoolGPA  0.70019    0.02316   30.24   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9452 on 11196 degrees of freedom
+  (2101 observations deleted due to missingness)
+Multiple R-squared:  0.0755,    Adjusted R-squared:  0.07542 
+F-statistic: 914.3 on 1 and 11196 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> HighSchoolGPA))<span class="sc">+</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y<span class="sc">~</span>x, <span class="at">se =</span> <span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported High School GPA vs First Praxis Z score"</span>, </span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-by-ethnicity-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-by-ethnicity-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported high school GPA by ethnicity</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs HigSchoolGPA &amp; Ethnicity</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-by-gender-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-by-gender-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported high school GPA by gender</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs HighSchoolGPA &amp; isMale</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>fpz_high_gender <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> HighSchoolGPA <span class="sc">+</span> <span class="fu">as.factor</span>(isMale) <span class="sc">+</span> HighSchoolGPA<span class="sc">:</span><span class="fu">as.factor</span>(isMale), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_high_gender)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ HighSchoolGPA + as.factor(isMale) + 
+    HighSchoolGPA:as.factor(isMale), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.2577 -0.5948  0.0803  0.6798  2.4870 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                      -2.89313    0.09164 -31.570  &lt; 2e-16 ***
+HighSchoolGPA                     0.81654    0.02569  31.786  &lt; 2e-16 ***
+as.factor(isMale)1                1.49863    0.21864   6.854 7.55e-12 ***
+HighSchoolGPA:as.factor(isMale)1 -0.34682    0.06584  -5.267 1.41e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9386 on 11194 degrees of freedom
+  (2101 observations deleted due to missingness)
+Multiple R-squared:  0.08848,   Adjusted R-squared:  0.08824 
+F-statistic: 362.2 on 3 and 11194 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_high_gender)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> HighSchoolGPA, <span class="at">color =</span> <span class="fu">as.factor</span>(isMale)))<span class="sc">+</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#male line</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span> <span class="co">#female line</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported High School GPA vs First Praxis Z score by Gender"</span>, </span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>, <span class="at">color =</span> <span class="st">'Gender'</span>)<span class="sc">+</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Gender"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Female'</span>, <span class="st">'Male'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-with-pell-grant-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-with-pell-grant-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported high school GPA with pell grant</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs HighSchoolGPA &amp; ReceivedPell</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>fpz_high_pell <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> HighSchoolGPA <span class="sc">+</span> <span class="fu">as.factor</span>(ReceivedPell) <span class="sc">+</span> HighSchoolGPA<span class="sc">:</span><span class="fu">as.factor</span>(ReceivedPell), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_high_pell)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ HighSchoolGPA + as.factor(ReceivedPell) + 
+    HighSchoolGPA:as.factor(ReceivedPell), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.9050 -0.5988  0.0731  0.6848  2.6215 
+
+Coefficients:
+                                       Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                            -2.28354    0.11872 -19.235   &lt;2e-16 ***
+HighSchoolGPA                           0.65468    0.03346  19.565   &lt;2e-16 ***
+as.factor(ReceivedPell)1               -0.31451    0.16417  -1.916   0.0554 .  
+HighSchoolGPA:as.factor(ReceivedPell)1  0.08694    0.04636   1.875   0.0608 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9451 on 11194 degrees of freedom
+  (2101 observations deleted due to missingness)
+Multiple R-squared:  0.07581,   Adjusted R-squared:  0.07556 
+F-statistic: 306.1 on 3 and 11194 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_high_pell)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> HighSchoolGPA, <span class="at">color =</span> <span class="fu">as.factor</span>(ReceivedPell)))<span class="sc">+</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#pell line</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span> <span class="co">#non-pell line</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported High School GPA vs First Praxis Z score with Pell Grant"</span>, </span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>, <span class="at">color =</span> <span class="st">'Pell Grant'</span>)<span class="sc">+</span></span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Pell Grant"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Non-Pell Grant Receiver'</span>, <span class="st">'Pell Grant Receiver'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-self-reported-high-school-gpa-with-mission-predict-a-students-first-attempt-praxis-performance-or-not" class="level3">
+<h3 class="anchored" data-anchor-id="does-self-reported-high-school-gpa-with-mission-predict-a-students-first-attempt-praxis-performance-or-not">Does <em>self-reported high school GPA with mission</em> predict a student’s first attempt praxis performance or not?</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Praxis Z Score vs HighSchoolGPA &amp; ServedMission</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>fpz_high_mission <span class="ot">&lt;-</span> <span class="fu">lm</span>(first_z_score <span class="sc">~</span> HighSchoolGPA <span class="sc">+</span> <span class="fu">as.factor</span>(ServedMission) <span class="sc">+</span> HighSchoolGPA<span class="sc">:</span><span class="fu">as.factor</span>(ServedMission), <span class="at">data =</span> praxis_first_zscore)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fpz_high_mission)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = first_z_score ~ HighSchoolGPA + as.factor(ServedMission) + 
+    HighSchoolGPA:as.factor(ServedMission), data = praxis_first_zscore)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.0274 -0.5881  0.0716  0.6867  2.5106 
+
+Coefficients:
+                                           Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                                -2.84446    0.11033 -25.782  &lt; 2e-16
+HighSchoolGPA                               0.79440    0.03107  25.569  &lt; 2e-16
+as.factor(ServedMission)TRUE                0.83790    0.16414   5.105 3.37e-07
+HighSchoolGPA:as.factor(ServedMission)TRUE -0.19303    0.04641  -4.160 3.21e-05
+                                              
+(Intercept)                                ***
+HighSchoolGPA                              ***
+as.factor(ServedMission)TRUE               ***
+HighSchoolGPA:as.factor(ServedMission)TRUE ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9413 on 11194 degrees of freedom
+  (2101 observations deleted due to missingness)
+Multiple R-squared:  0.08321,   Adjusted R-squared:  0.08296 
+F-statistic: 338.7 on 3 and 11194 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(fpz_high_mission)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(praxis_first_zscore, <span class="fu">aes</span>(<span class="at">y =</span> first_z_score, <span class="at">x =</span> HighSchoolGPA, <span class="at">color =</span> <span class="fu">as.factor</span>(ServedMission)))<span class="sc">+</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>]<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"blue"</span>)<span class="sc">+</span> <span class="co">#non-returned missionary line</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) (b[<span class="dv">1</span>]<span class="sc">+</span>b[<span class="dv">3</span>]) <span class="sc">+</span> (b[<span class="dv">2</span>]<span class="sc">+</span>b[<span class="dv">4</span>])<span class="sc">*</span>x, <span class="at">color =</span> <span class="st">"red"</span>)<span class="sc">+</span> <span class="co">#returned missionary line</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Self-Reported High School GPA vs First Praxis Z score with Mission"</span>, </span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"First Attempt Praxis Z Score"</span>, <span class="at">x =</span> <span class="st">"High School GPA"</span>, <span class="at">color =</span> <span class="st">'Mission'</span>)<span class="sc">+</span></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">name=</span><span class="st">"Mission"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Rerturned Missionary'</span>, <span class="st">'Non-Returned Missionary'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Regression 3: Target is a student’s last attempt praxis z score</p></li>
+<li><p>Regression 4: Target is a student’s last attempt score points from the state’s passing standard</p></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
